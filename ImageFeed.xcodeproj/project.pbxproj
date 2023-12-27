@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FE9211912B3B0B8A00BD6186 /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9211902B3B0B8A00BD6186 /* ImagesListCell.swift */; };
 		FEBB81652B2AF87A003A39CE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBB81642B2AF87A003A39CE /* AppDelegate.swift */; };
 		FEBB81672B2AF87A003A39CE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBB81662B2AF87A003A39CE /* SceneDelegate.swift */; };
-		FEBB81692B2AF87A003A39CE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBB81682B2AF87A003A39CE /* ViewController.swift */; };
+		FEBB81692B2AF87A003A39CE /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBB81682B2AF87A003A39CE /* ImagesListViewController.swift */; };
 		FEBB816C2B2AF87A003A39CE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEBB816A2B2AF87A003A39CE /* Main.storyboard */; };
 		FEBB816F2B2AF87A003A39CE /* ImageFeed.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FEBB816D2B2AF87A003A39CE /* ImageFeed.xcdatamodeld */; };
 		FEBB81712B2AF87A003A39CE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FEBB81702B2AF87A003A39CE /* Assets.xcassets */; };
@@ -37,10 +38,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FE9211902B3B0B8A00BD6186 /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 		FEBB81612B2AF87A003A39CE /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEBB81642B2AF87A003A39CE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FEBB81662B2AF87A003A39CE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		FEBB81682B2AF87A003A39CE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		FEBB81682B2AF87A003A39CE /* ImagesListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListViewController.swift; sourceTree = "<group>"; };
 		FEBB816B2B2AF87A003A39CE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FEBB816E2B2AF87A003A39CE /* ImageFeed.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ImageFeed.xcdatamodel; sourceTree = "<group>"; };
 		FEBB81702B2AF87A003A39CE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -78,6 +80,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FE9211922B3B0BB900BD6186 /* ImagesList */ = {
+			isa = PBXGroup;
+			children = (
+				FEBB81682B2AF87A003A39CE /* ImagesListViewController.swift */,
+				FE9211902B3B0B8A00BD6186 /* ImagesListCell.swift */,
+			);
+			path = ImagesList;
+			sourceTree = "<group>";
+		};
 		FEBB81582B2AF87A003A39CE = {
 			isa = PBXGroup;
 			children = (
@@ -101,9 +112,9 @@
 		FEBB81632B2AF87A003A39CE /* ImageFeed */ = {
 			isa = PBXGroup;
 			children = (
+				FE9211922B3B0BB900BD6186 /* ImagesList */,
 				FEBB81642B2AF87A003A39CE /* AppDelegate.swift */,
 				FEBB81662B2AF87A003A39CE /* SceneDelegate.swift */,
-				FEBB81682B2AF87A003A39CE /* ViewController.swift */,
 				FEBB816A2B2AF87A003A39CE /* Main.storyboard */,
 				FEBB81702B2AF87A003A39CE /* Assets.xcassets */,
 				FEBB81722B2AF87A003A39CE /* LaunchScreen.storyboard */,
@@ -261,8 +272,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FEBB81692B2AF87A003A39CE /* ViewController.swift in Sources */,
+				FEBB81692B2AF87A003A39CE /* ImagesListViewController.swift in Sources */,
 				FEBB816F2B2AF87A003A39CE /* ImageFeed.xcdatamodeld in Sources */,
+				FE9211912B3B0B8A00BD6186 /* ImagesListCell.swift in Sources */,
 				FEBB81652B2AF87A003A39CE /* AppDelegate.swift in Sources */,
 				FEBB81672B2AF87A003A39CE /* SceneDelegate.swift in Sources */,
 			);
