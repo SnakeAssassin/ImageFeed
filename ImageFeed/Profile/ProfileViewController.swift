@@ -12,10 +12,4 @@ final class ProfileViewController: UIViewController {
     
     @IBAction private func didTapLogoutButton() {
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-    }
-    
 }
