@@ -19,6 +19,8 @@ final class ImagesListViewController: UIViewController {
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
     
+    // MARK: Methods
+    
     // Передаем сегвею нужную картинку при нажатии на нее из таблицы
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
             if segue.identifier == ShowSingleImageSegueIdentifier {
@@ -32,7 +34,7 @@ final class ImagesListViewController: UIViewController {
         }
 }
 
-    // MARK: - Methods
+    // MARK: - Extension Methods
 
 extension ImagesListViewController: UITableViewDataSource {
 
