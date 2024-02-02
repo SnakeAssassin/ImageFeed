@@ -2,7 +2,7 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
-    // MARK: Properties
+    // MARK: Private properties
     
     private lazy var profileImageView: UIImageView = {
         let image = UIImageView()
@@ -43,6 +43,7 @@ final class ProfileViewController: UIViewController {
     private lazy var exitButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "Exit"), for: .normal)
+        
         button.tintColor = UIColor(named: "YP Red")
         button.translatesAutoresizingMaskIntoConstraints = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
