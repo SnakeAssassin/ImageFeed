@@ -1,16 +1,10 @@
-import Foundation
-
-
-/// Класс для сохранения токена в UserDefaults
+import UIKit
 
 final class OAuth2TokenStorage {
     
-    // Для вызова из других мест, чтобы не создавать экземпляры
-    static let shared = OAuth2TokenStorage() // Синглтон
-    
+    static let shared = OAuth2TokenStorage()
     private let tokenKey = "OAuth2TokenKey"
 
-    
     var token: String? {
         get {
             return UserDefaults.standard.string(forKey: tokenKey) 
@@ -19,6 +13,6 @@ final class OAuth2TokenStorage {
             UserDefaults.standard.set(newValue, forKey: tokenKey)
         }
     }
-
-    //init() {}
+    
+    private init() { }
 }

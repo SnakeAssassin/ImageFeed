@@ -7,7 +7,6 @@ import WebKit
 protocol WebViewViewControllerDelegate: AnyObject {
 
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
-
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
 
@@ -16,16 +15,12 @@ protocol WebViewViewControllerDelegate: AnyObject {
 
 final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     
-    weak var delegate: WebViewViewControllerDelegate?
-    
     // MARK: Private properties
     
-    fileprivate let UnsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
+    weak var delegate: WebViewViewControllerDelegate?
     
     private lazy var webView: WKWebView = {
         let webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
-        
-        /// Делегат navigationDelegate предоставляет методы, которые позволяют отслеживать события навигации, такие как начало и завершение загрузки страницы, обработка ошибок, получение запросов на аутентификацию и другие связанные с навигацией события.
         webView.navigationDelegate = self
         return webView
     }()
@@ -44,19 +39,17 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     private lazy var progressView: UIProgressView = {
         let progressView = UIProgressView()
         progressView.progressViewStyle = .bar
-        progressView.progressTintColor = UIColor(named: "YP Black")
-        progressView.trackTintColor = UIColor(named: "YP Gray")
+        progressView.progressTintColor = .ypBlack
+        progressView.trackTintColor = .ypGray
         return progressView
     }()
     
     
     // MARK: Actions
     
-    @objc func didTapButton() {
+    @objc private func didTapButton() {
         delegate?.webViewViewControllerDidCancel(self)
-        print("Закрываю Web View")
     }
-    
     
     // MARK: Lifecycle
     
@@ -69,7 +62,6 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Подписка через KVO
         webView.addObserver(self,
                             forKeyPath: #keyPath(WKWebView.estimatedProgress),
                             options: .new,
@@ -79,9 +71,7 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        print("viewDidDisappear called")
         
-        // Отписка через KVO
         webView.removeObserver(self,
                                forKeyPath: #keyPath(WKWebView.estimatedProgress),
                                context: nil)
@@ -93,26 +83,19 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
 
 extension WebViewViewController {
     
-    // Разрешает или прекращает навигацию (загрузка страницы или другое действие будет отменено)
-    
-    /// `webView выбор WebView`, если делегат принимает сообщения от нескольких WKWebView.
-    /// `navigationAction: WKNavigationAction` - этот объект содержит информацию о том, что явилось причиной навигационных действий.
-    /// `decisionHandler` -  передаётся замыкание: `cancel` — отменить навигацию, `allow` — разрешить навигацию,`download` — разрешить загрузку.
     internal func webView(_ webView: WKWebView,
                  decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ){
-        if let code = code(from: navigationAction) { //1
-            print("WebViewViewController: code принят. Передаю в AuthViewController")
+        if let code = code(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
-            decisionHandler(.cancel) // Если код успешно получен, отменяем навигационное действие
+            decisionHandler(.cancel)
             navigationController?.popViewController(animated: true)
         } else {
-            decisionHandler(.allow) // Если код не получен, разрешаем навигационное действие.
+            decisionHandler(.allow)
         }
     }
     
-    // Проверяем что код из реквеста получен
     private func code(from navigationAction: WKNavigationAction) -> String? {
         if let url = navigationAction.request.url,
            let urlComponents = URLComponents(string: url.absoluteString),
@@ -132,7 +115,6 @@ extension WebViewViewController {
 
 extension WebViewViewController {
     
-    // Обработчик обновлений KVO
     override func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
@@ -160,7 +142,7 @@ extension WebViewViewController {
         setBackButton()
         setWebView()
         setProgressView()
-        view.backgroundColor = UIColor(named: "YP White")
+        view.backgroundColor = .ypWhite
     }
     
     private func setBackButton() {
@@ -209,7 +191,7 @@ extension WebViewViewController {
             URLQueryItem(name: "response_type", value: "code"),
             URLQueryItem(name: "scope", value: AccessScope)
         ]
-        // https://unsplash.com/oauth/authorize/?client_id=AccesKey&redirect_uri=RedirectURI&response_type=code&scope=AccessScope
+        
         let url = urlComponents.url!
         let request = URLRequest(url: url)
         webView.load(request)

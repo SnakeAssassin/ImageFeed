@@ -6,12 +6,11 @@ final class SplashViewController: UIViewController {
     
     // MARK: Private properties
     
-    private let ShowAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
-    private let TabBarViewControllerIdentifier = "TabBarViewController"
+    private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
+    private let tabBarViewControllerIdentifier = "TabBarViewController"
     private let oauth2TokenStorage = OAuth2TokenStorage.shared
     private let oauth2Service = OAuth2Service.shared
     
-    /// Устанавливаем стиль статус бара
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
     }
@@ -31,15 +30,12 @@ final class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setLogoImage()
-        view.backgroundColor = UIColor(named: "YP Black")
+        view.backgroundColor = .ypBlack
         
         if let token = oauth2TokenStorage.token {
-            print("Токен есть. Переход к TabBarController")
             switchToTabBarController()
         } else {
-            // Show Auth Screen
-            print("Токена нет. Переход к AuthScreen")
-            performSegue(withIdentifier: ShowAuthenticationScreenSegueIdentifier, sender: nil)
+            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         }
     }
     
@@ -58,11 +54,14 @@ final class SplashViewController: UIViewController {
         ])
     }
     
-    // Переключаем корневой root-контроллер на TabBarViewController
     private func switchToTabBarController() {
-        guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
+        guard let window = UIApplication.shared.windows.first else {
+            // fatalError("Invalid Configuration")
+            print("SplashViewController: Window Invalid Configuration")
+            return
+        }
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
-            .instantiateViewController(withIdentifier: TabBarViewControllerIdentifier)
+            .instantiateViewController(withIdentifier: tabBarViewControllerIdentifier)
         window.rootViewController = tabBarController
     }
 }
@@ -72,13 +71,16 @@ final class SplashViewController: UIViewController {
 
 extension SplashViewController {
     
-    // Используется для подготовки перехода на следующий экран
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == ShowAuthenticationScreenSegueIdentifier {
+        if segue.identifier == showAuthenticationScreenSegueIdentifier {
             guard
                 let navigationController = segue.destination as? UINavigationController,
                 let viewController = navigationController.viewControllers[0] as? AuthViewController
-            else { fatalError("Failed to prepare for \(ShowAuthenticationScreenSegueIdentifier)") }
+            else {
+                // fatalError("Failed to prepare for \(showAuthenticationScreenSegueIdentifier)")
+                print("Failed to prepare for \(showAuthenticationScreenSegueIdentifier)")
+                return
+            }
             viewController.modalPresentationStyle = .fullScreen
             viewController.delegate = self
         } else {
@@ -91,7 +93,6 @@ extension SplashViewController {
 
 extension SplashViewController: AuthViewControllerDelegate {
     
-    // Закрываем окно авторизации и передаем code на сервер
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
@@ -99,7 +100,6 @@ extension SplashViewController: AuthViewControllerDelegate {
         }
     }
     
-    // Запрашиваем Bearer-токен
     private func fetchOAuthToken(_ code: String) {
         oauth2Service.fetchOAuthToken(code) { [weak self] result in
             guard let self = self else { return }

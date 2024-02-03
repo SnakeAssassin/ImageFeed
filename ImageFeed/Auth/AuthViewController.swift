@@ -2,7 +2,6 @@ import UIKit
 
 // MARK: - AuthViewController Delegate
 
-/// AuthView является делегатом для SplashView и управляется от него через эти функции
 protocol AuthViewControllerDelegate: AnyObject {
     
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
@@ -15,7 +14,7 @@ final class AuthViewController: UIViewController {
         
     // MARK: Private properties
     
-    private let ShowWebViewSegueIdentifier = "ShowWebView"
+    private let showWebViewSegueIdentifier = "ShowWebView"
     
     weak var delegate: AuthViewControllerDelegate?
     
@@ -30,11 +29,11 @@ final class AuthViewController: UIViewController {
     
     private lazy var loginButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(named: "YP White")
+        button.backgroundColor = .ypWhite
         button.setTitle("Войти", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17.0)
-        button.setTitleColor(UIColor(named: "YP Black"), for: .normal)
-        button.setTitleColor(UIColor(named: "YP Gray"), for: .highlighted)
+        button.setTitleColor(.ypBlack, for: .normal)
+        button.setTitleColor(.ypGray, for: .highlighted)
         button.contentHorizontalAlignment = .center
         button.layer.cornerRadius = 16
         button.layer.masksToBounds = true
@@ -47,8 +46,8 @@ final class AuthViewController: UIViewController {
     
     // MARK: Actions
     
-    @objc func didTapButton() {
-        performSegue(withIdentifier: ShowWebViewSegueIdentifier, sender: nil)
+    @objc private func didTapButton() {
+        performSegue(withIdentifier: showWebViewSegueIdentifier, sender: nil)
     }
     
     
@@ -58,7 +57,7 @@ final class AuthViewController: UIViewController {
         super.viewDidLoad()
         setLogoImage()
         setLoginButton()
-        view.backgroundColor = UIColor(named: "YP Black")
+        view.backgroundColor = .ypBlack
     }
     
     
@@ -83,12 +82,17 @@ final class AuthViewController: UIViewController {
 }
 
 // MARK: - Prepare for Segue
+
 extension AuthViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == ShowWebViewSegueIdentifier {
+        if segue.identifier == showWebViewSegueIdentifier {
             guard
                 let webViewViewController = segue.destination as? WebViewViewController
-            else { fatalError("Failed to prepare for \(ShowWebViewSegueIdentifier)") }
+            else {
+                // fatalError("Failed to prepare for \(showWebViewSegueIdentifier)")
+                print("Failed to prepare for \(showWebViewSegueIdentifier)")
+                return
+            }
             webViewViewController.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
@@ -98,16 +102,15 @@ extension AuthViewController {
 
 
 // MARK: - AuthView Delegate
+
 extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        print("AuthViewController: code принят. Передаю в SplashViewController")
         delegate?.authViewController(self, didAuthenticateWithCode: code)
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         self.dismiss(animated: true, completion: nil)
-        print("закрыли окно через делегат")
     }
 }
 

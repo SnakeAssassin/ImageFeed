@@ -17,7 +17,7 @@ final class ProfileViewController: UIViewController {
         let label = UILabel()
         label.text = "Екатерина Новикова"
         label.font = UIFont.systemFont(ofSize: 23, weight: .bold)
-        label.textColor = UIColor(named: "YP White")
+        label.textColor = .ypWhite
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -26,7 +26,7 @@ final class ProfileViewController: UIViewController {
         let label = UILabel()
         label.text = "@ekaterina_now"
         label.font = UIFont.systemFont(ofSize: 13)
-        label.textColor = UIColor(named: "YP Gray")
+        label.textColor = .ypGray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -35,7 +35,7 @@ final class ProfileViewController: UIViewController {
         let label = UILabel()
         label.text = "Hello, world!"
         label.font = UIFont.systemFont(ofSize: 13)
-        label.textColor = UIColor(named: "YP White")
+        label.textColor = .ypWhite
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -44,7 +44,7 @@ final class ProfileViewController: UIViewController {
         let button = UIButton()
         button.setImage(UIImage(named: "Exit"), for: .normal)
         
-        button.tintColor = UIColor(named: "YP Red")
+        button.tintColor = .ypRed
         button.translatesAutoresizingMaskIntoConstraints = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         button.widthAnchor.constraint(equalToConstant: 44).isActive = true
