@@ -4,7 +4,7 @@ import UIKit
 final class ImagesListViewController: UIViewController {
     
     // MARK: Properties
-
+    
     private let photosName: [String] = Array(0..<20).map {"\($0)"}
     private let ShowSingleImageSegueIdentifier = "ShowSingleImage"
     
@@ -23,21 +23,21 @@ final class ImagesListViewController: UIViewController {
     
     // Передаем сегвею нужную картинку при нажатии на нее из таблицы
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-            if segue.identifier == ShowSingleImageSegueIdentifier {
-                let viewController = segue.destination as! SingleImageViewController
-                let indexPath = sender as! IndexPath
-                let image = UIImage(named: photosName[indexPath.row])
-                viewController.image = image
-            } else {
-                super.prepare(for: segue, sender: sender)
-            }
+        guard segue.identifier == ShowSingleImageSegueIdentifier else {
+            super.prepare(for: segue, sender: sender)
+            return
         }
+        if let viewController = segue.destination as? SingleImageViewController, let indexPath = sender as? IndexPath {
+            let image = UIImage(named: photosName[indexPath.row])
+            viewController.setImage(image: image)
+        }
+    }
 }
 
-    // MARK: - Extension Methods
+// MARK: - Extension Methods
 
 extension ImagesListViewController: UITableViewDataSource {
-
+    
     // Устанавливаем количество ячеек в секции
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return photosName.count
