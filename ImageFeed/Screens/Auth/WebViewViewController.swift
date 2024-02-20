@@ -5,11 +5,10 @@ import WebKit
 // MARK: - WebView Controller Delegate
 
 protocol WebViewViewControllerDelegate: AnyObject {
-
+    
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
-
 
 // MARK: - WebView Controller
 
@@ -18,8 +17,6 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     // MARK: Private properties
     
     weak var delegate: WebViewViewControllerDelegate?
-    
-    // Наблюдатель KVO
     private var estimatedProgressObservation: NSKeyValueObservation?
     
     private lazy var webView: WKWebView = {
@@ -69,17 +66,16 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-    }    
+    }
 }
-
 
 // MARK: - Navigation Action
 
 extension WebViewViewController {
     
     internal func webView(_ webView: WKWebView,
-                 decidePolicyFor navigationAction: WKNavigationAction,
-                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+                          decidePolicyFor navigationAction: WKNavigationAction,
+                          decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ){
         if let code = code(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
@@ -104,18 +100,17 @@ extension WebViewViewController {
     }
 }
 
-
 // MARK: - Update Progress
 
 extension WebViewViewController {
     private func setupProgressObservation() {
         estimatedProgressObservation = webView.observe(
-                    \.estimatedProgress,
-                    options: [],
-                    changeHandler: { [weak self] _, _ in
-                        guard let self = self else { return }
-                        self.updateProgress()
-                    })
+            \.estimatedProgress,
+             options: [],
+             changeHandler: { [weak self] _, _ in
+                 guard let self = self else { return }
+                 self.updateProgress()
+             })
     }
     
     private func updateProgress() {
@@ -142,7 +137,7 @@ extension WebViewViewController {
             backButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8)
         ])
     }
-
+    
     private func setWebView() {
         
         view.addSubview(webView)
@@ -155,8 +150,6 @@ extension WebViewViewController {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
-    
     
     private func setProgressView() {
         view.addSubview(progressView)

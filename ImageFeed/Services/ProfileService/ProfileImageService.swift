@@ -8,7 +8,6 @@ final class ProfileImageService {
     private var task: URLSessionTask?
     private(set) var avatarURL: String?
     
-    /// 1. Имя нотификации
     static let DidChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
     private init() { }
@@ -24,9 +23,7 @@ final class ProfileImageService {
             switch result {
             case.success(let user):
                 self.avatarURL = user.profileImage!["large"]
-                print(avatarURL)
                 completion(.success(self.avatarURL!))
-                /// 2. Публикация нотификации
                 NotificationCenter.default.post(name: ProfileImageService.DidChangeNotification, object: self, userInfo: ["URL": self.avatarURL!])
                 self.task = nil
             case.failure(let error):

@@ -4,13 +4,12 @@ final class ProfileService {
     
     static let shared = ProfileService()
     private let urlSession = URLSession.shared
-    private var task: URLSessionTask?           // 1. Для проверки активных задач (если нет - nil)
+    private var task: URLSessionTask?
     private(set) var profile: Profile?
     
     private init() { }
     
     internal func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
-        /// Блок проверки запущенных запросов в сеть, для исключения ситуации гонки из-за запросов более одного
         assert(Thread.isMainThread)
         guard task == nil else { return }
         var request = URLRequest.makeHTTPRequest(path: "/me", httpMethod: "GET")
@@ -24,7 +23,7 @@ final class ProfileService {
                                        loginName: "@" + (profile.username ?? ""),
                                        bio: profile.bio ?? "")
                 completion(.success(self.profile!))
-                self.task = nil                                     // Обнуляем таск так как обработка завершена
+                self.task = nil
             case.failure(let error):
                 print("Ошибка получения данных профиля: \(error)")
                 completion(.failure(error))
