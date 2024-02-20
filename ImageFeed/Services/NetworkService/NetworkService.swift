@@ -41,7 +41,6 @@ extension URLSession {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let decodedData = try decoder.decode(T.self, from: data)
-                print(decodedData)
                 fulfillCompletion(.success(decodedData))
             } catch {
                 print("Получена ошибка декодирования: \(error.localizedDescription)")
