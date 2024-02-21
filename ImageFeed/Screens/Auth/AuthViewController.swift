@@ -11,10 +11,8 @@ protocol AuthViewControllerDelegate: AnyObject {
 // MARK: - AuthViewController
 
 final class AuthViewController: UIViewController {
-        
-    // MARK: Private properties
     
-    private let showWebViewSegueIdentifier = "ShowWebView"
+    // MARK: Private properties
     
     weak var delegate: AuthViewControllerDelegate?
     
@@ -43,13 +41,11 @@ final class AuthViewController: UIViewController {
         return button
     }()
     
-    
     // MARK: Actions
     
     @objc private func didTapButton() {
-        performSegue(withIdentifier: showWebViewSegueIdentifier, sender: nil)
+        showWebViewController()
     }
-    
     
     // MARK: Lifecycle
     
@@ -59,7 +55,6 @@ final class AuthViewController: UIViewController {
         setLoginButton()
         view.backgroundColor = .ypBlack
     }
-    
     
     // MARK: Create View
     
@@ -84,22 +79,13 @@ final class AuthViewController: UIViewController {
 // MARK: - Prepare for Segue
 
 extension AuthViewController {
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showWebViewSegueIdentifier {
-            guard
-                let webViewViewController = segue.destination as? WebViewViewController
-            else {
-                // fatalError("Failed to prepare for \(showWebViewSegueIdentifier)")
-                print("Failed to prepare for \(showWebViewSegueIdentifier)")
-                return
-            }
-            webViewViewController.delegate = self
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
+    
+    private func showWebViewController() {
+        let webViewViewController = WebViewViewController()
+        navigationController?.pushViewController(webViewViewController, animated: true)
+        webViewViewController.delegate = self
     }
 }
-
 
 // MARK: - AuthView Delegate
 

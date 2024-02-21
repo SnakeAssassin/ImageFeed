@@ -5,11 +5,10 @@ import WebKit
 // MARK: - WebView Controller Delegate
 
 protocol WebViewViewControllerDelegate: AnyObject {
-
+    
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
-
 
 // MARK: - WebView Controller
 
@@ -18,6 +17,7 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     // MARK: Private properties
     
     weak var delegate: WebViewViewControllerDelegate?
+    private var estimatedProgressObservation: NSKeyValueObservation?
     
     private lazy var webView: WKWebView = {
         let webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
@@ -57,35 +57,25 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
         super.viewDidLoad()
         createView()
         loadURLWebView()
+        setupProgressObservation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        webView.addObserver(self,
-                            forKeyPath: #keyPath(WKWebView.estimatedProgress),
-                            options: .new,
-                            context: nil)
-        updateProgress()   
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
-        webView.removeObserver(self,
-                               forKeyPath: #keyPath(WKWebView.estimatedProgress),
-                               context: nil)
-    }    
+    }
 }
-
 
 // MARK: - Navigation Action
 
 extension WebViewViewController {
     
     internal func webView(_ webView: WKWebView,
-                 decidePolicyFor navigationAction: WKNavigationAction,
-                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+                          decidePolicyFor navigationAction: WKNavigationAction,
+                          decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ){
         if let code = code(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
@@ -110,22 +100,17 @@ extension WebViewViewController {
     }
 }
 
-
 // MARK: - Update Progress
 
 extension WebViewViewController {
-    
-    override func observeValue(
-        forKeyPath keyPath: String?,
-        of object: Any?,
-        change: [NSKeyValueChangeKey : Any]?,
-        context: UnsafeMutableRawPointer?
-    ) {
-        if keyPath == #keyPath(WKWebView.estimatedProgress) {
-            updateProgress()
-        } else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-        }
+    private func setupProgressObservation() {
+        estimatedProgressObservation = webView.observe(
+            \.estimatedProgress,
+             options: [],
+             changeHandler: { [weak self] _, _ in
+                 guard let self = self else { return }
+                 self.updateProgress()
+             })
     }
     
     private func updateProgress() {
@@ -152,7 +137,7 @@ extension WebViewViewController {
             backButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8)
         ])
     }
-
+    
     private func setWebView() {
         
         view.addSubview(webView)
@@ -165,8 +150,6 @@ extension WebViewViewController {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
-    
     
     private func setProgressView() {
         view.addSubview(progressView)

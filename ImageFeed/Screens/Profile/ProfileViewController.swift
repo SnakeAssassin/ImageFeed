@@ -1,12 +1,17 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
     // MARK: Private properties
     
+    private let profileService = ProfileService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     private lazy var profileImageView: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "Photo")
+        image.layer.cornerRadius = 35
+        image.clipsToBounds = true
         image.translatesAutoresizingMaskIntoConstraints = false
         image.heightAnchor.constraint(equalToConstant: 70).isActive = true
         image.widthAnchor.constraint(equalToConstant: 70).isActive = true
@@ -49,7 +54,6 @@ final class ProfileViewController: UIViewController {
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         button.widthAnchor.constraint(equalToConstant: 44).isActive = true
         button.addTarget(self, action: #selector(Self.didTapButton), for: .touchUpInside)
-        
         return button
     }()
     
@@ -57,23 +61,68 @@ final class ProfileViewController: UIViewController {
     // MARK: Actions
     
     @objc func didTapButton() {
-        print("Event")
+        OAuth2TokenStorage.shared.removeToken() // Для отладки
+        print("Токен удален")
     }
     
-
+    
     // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        startObserver()
+        createView()
+    }
+}
+
+// MARK: - Update Profile
+
+extension ProfileViewController {
+    
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel.text = ProfileService.shared.profile?.name
+        idLabel.text = ProfileService.shared.profile?.loginName
+        descriptionLabel.text = ProfileService.shared.profile?.bio
+    }
+    
+    private func startObserver() {
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.DidChangeNotification,
+            object: nil,
+            queue: .main) {
+                [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        profileImageView.kf.indicatorType = .activity
+        profileImageView.kf.setImage(with: url,
+                                     placeholder: UIImage(named: "Stub"))
+    }
+}
+
+// MARK: - Create View
+
+extension ProfileViewController {
+    
+    private func createView() {
+        if let profile = profileService.profile {
+            updateProfileDetails(profile: profile)
+        }
         setProfileImage()
         setNameLabel()
         setIdLabel()
         setDescriptionLabel()
         setExitButton()
+        updateAvatar()
     }
-    
-    
-    // MARK: Create View
     
     private func setProfileImage() {
         view.addSubview(profileImageView)
@@ -112,6 +161,6 @@ final class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate([
             exitButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
             exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16)
-            ])
+        ])
     }
 }
