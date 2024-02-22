@@ -45,7 +45,7 @@ final class OAuth2Service {
                 completion(.success(authToken))
                 self.task = nil
             case .failure(let error):
-                print("Ошибка получения Auth Token: \(error)")
+                print("[OAuth2Service/task]: Ошибка получения Auth Token - \(error)")
                 completion(.failure(error))
                 self.lastCode = nil
             }

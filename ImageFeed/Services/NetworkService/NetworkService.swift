@@ -29,10 +29,10 @@ extension URLSession {
         let task = dataTask(with: request, completionHandler: { data, response, error in
             guard let data = data else {
                 if let error = error {
-                    print("Получена ошибка запроса: \(NetworkError.urlRequestError(error))")
+                    print("[URLSession/task] Получена ошибка запроса – \(NetworkError.urlRequestError(error))")
                     fulfillCompletion(.failure(NetworkError.urlRequestError(error)))
                 } else {
-                    print("Получена ошибка сессии: \(NetworkError.urlSessionError)")
+                    print("[URLSession/task] Получена ошибка сессии – \(NetworkError.urlSessionError)")
                     fulfillCompletion(.failure(NetworkError.urlSessionError))
                 }
                 return
@@ -43,7 +43,7 @@ extension URLSession {
                 let decodedData = try decoder.decode(T.self, from: data)
                 fulfillCompletion(.success(decodedData))
             } catch {
-                print("Получена ошибка декодирования: \(error.localizedDescription)")
+                print("[URLSession/task] Получена ошибка декодирования – \(error.localizedDescription)")
                 fulfillCompletion(.failure(error))
             }
         })

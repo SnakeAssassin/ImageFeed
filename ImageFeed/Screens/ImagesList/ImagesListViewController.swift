@@ -1,5 +1,5 @@
 import UIKit
-
+import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
@@ -7,6 +7,8 @@ final class ImagesListViewController: UIViewController {
     
     private let photosName: [String] = Array(0..<20).map {"\($0)"}
     private let ShowSingleImageSegueIdentifier = "ShowSingleImage"
+//    private let oauth2TokenStorage = OAuth2TokenStorage.shared
+//    private let imagesListService = ImagesListService.shared
     
     @IBOutlet private var tableView: UITableView!
     
@@ -14,6 +16,13 @@ final class ImagesListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        if let token = oauth2TokenStorage.token {
+//            fetchPhotosNextPage(token: token)
+//        } else {
+//            return
+//        }
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
@@ -58,6 +67,37 @@ extension ImagesListViewController: UITableViewDataSource {
         
         return cell
     }
+    
+//    // Метод вызывается прямо перед тем, как ячейка таблицы будет показана на экране
+//    func tableView(_ tableView: UITableView,
+//                   willDisplay cell: UITableViewCell,
+//                   forRowAt indexPath: IndexPath
+//    ) {
+//        // Проверяем совпадает ли количество ячеек с полученными данными фото
+//        if indexPath.row + 1 == imagesListService.photos.count {
+//            
+//            
+//            if let token = oauth2TokenStorage.token {
+//                imagesListService.fetchPhotosNextPage(token)  { [weak self] result in
+//                    guard let self = self else { return }
+//                    switch result {
+//                    case .success(let photos):
+//                        print("[SplashViewController/fetchPhotosNextPage()]: Данные фотографий получены - \(photos)")
+//                        self.photosArr = photos
+//                    case .failure(let error):
+//                        print("[SplashViewController/fetchPhotosNextPage()]: Данные фотографий не получены - \(error)")
+//                        //self.showAlertError()
+//                        break
+//                    }
+//                }
+//            } else {
+//                return
+//            }
+//            
+//            
+//        }
+//    }
+    
 }
 
 extension ImagesListViewController: UITableViewDelegate {
@@ -78,3 +118,34 @@ extension ImagesListViewController: UITableViewDelegate {
         return image.size.height * k + imageInsets.top + imageInsets.bottom
     }
 }
+
+/*extension ImagesListViewController {
+    
+    private func fetchPhotosNextPage(token: String) {
+        print("Вызываю fetchPhotosNextPage")
+        imagesListService.fetchPhotosNextPage(token)  { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let photos):
+                print("[SplashViewController/fetchPhotosNextPage()]: Данные фотографий получены - \(photos)")
+                self.photosArr = photos
+            case .failure(let error):
+                print("[SplashViewController/fetchPhotosNextPage()]: Данные фотографий не получены - \(error)")
+                self.showAlertError()
+                break
+            }
+        }
+    }
+    
+    private func showAlertError() {
+        let alert = UIAlertController(title: "Что-то пошло не так(",
+                                      message: "Не удалось получить ленту изображений",
+                                      preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        let vc = self.presentedViewController ?? self
+        vc.present(alert, animated: true, completion: nil)
+    }
+    
+    
+}*/

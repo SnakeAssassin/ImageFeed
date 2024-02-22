@@ -27,7 +27,7 @@ final class ProfileImageService {
                 NotificationCenter.default.post(name: ProfileImageService.DidChangeNotification, object: self, userInfo: ["URL": self.avatarURL!])
                 self.task = nil
             case.failure(let error):
-                print("Ошибка получения аватара профиля: \(error)")
+                print("[ProfileService/task] Ошибка получения аватара профиля – \(error)")
                 completion(.failure(error))
             }
         }
