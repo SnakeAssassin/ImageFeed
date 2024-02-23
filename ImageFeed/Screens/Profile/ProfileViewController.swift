@@ -104,7 +104,7 @@ extension ProfileViewController {
         else { return }
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(with: url,
-                                     placeholder: UIImage(named: "Stub"))
+                                     placeholder: UIImage(named: "Stub_profile"))
     }
 }
 

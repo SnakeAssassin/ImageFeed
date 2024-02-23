@@ -1,14 +1,16 @@
 import UIKit
+import ProgressHUD
 import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
     // MARK: Properties
     
-    private let photosName: [String] = Array(0..<20).map {"\($0)"}
+    private let imagesListService = ImagesListService.shared
+    private var imagesListServiceObserver: NSObjectProtocol?
+    private let photosName: [String] = Array(0..<10).map {"\($0)"}
     private let ShowSingleImageSegueIdentifier = "ShowSingleImage"
-//    private let oauth2TokenStorage = OAuth2TokenStorage.shared
-//    private let imagesListService = ImagesListService.shared
+    private var photos: [Photo] = []
     
     @IBOutlet private var tableView: UITableView!
     
@@ -16,17 +18,25 @@ final class ImagesListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        if let token = oauth2TokenStorage.token {
-//            fetchPhotosNextPage(token: token)
-//        } else {
-//            return
-//        }
-        
+        imagesListService.fetchPhotosNextPage()
+        startObserver()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
+    
+    private func startObserver() {
+        imagesListServiceObserver = NotificationCenter.default.addObserver(
+            forName: ImagesListService.didChangeNotification,
+            object: nil,
+            queue: .main) {
+                [weak self] _ in
+                guard let self = self else { return }
+                self.updateTableViewAnimated()
+            }
+        UIBlockingProgressHUD.show()
+    }
+    
     
     // MARK: Methods
     
@@ -47,12 +57,13 @@ final class ImagesListViewController: UIViewController {
 
 extension ImagesListViewController: UITableViewDataSource {
     
-    // Устанавливаем количество ячеек в секции
+    // 1. Устанавливаем количество ячеек в секции
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count
+        //return photosName.count
+        return photos.count
     }
     
-    // Наполняем ячейку данными
+    // 2. Наполняем каждую ячейку внутри таблицы данными
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Из всех зарегистрированных ячеек в таблице, вернуть ячейку по идентификатору
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
@@ -60,44 +71,64 @@ extension ImagesListViewController: UITableViewDataSource {
         guard let cell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
-        
-        let imageName = photosName[indexPath.row]
+        //let imageName = photosName[indexPath.row]
+        let imageURL = photos[indexPath.row].thumbImageURL
         let isLiked = indexPath.row % 2 == 0
-        cell.configCell(with: imageName, isLiked: isLiked)
-        
+        cell.configCell(with: imageURL, isLiked: isLiked) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                // Перерисовываем ячейку после загрузки изображения
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            case .failure:
+                return
+            }
+        }
         return cell
     }
     
-//    // Метод вызывается прямо перед тем, как ячейка таблицы будет показана на экране
-//    func tableView(_ tableView: UITableView,
-//                   willDisplay cell: UITableViewCell,
-//                   forRowAt indexPath: IndexPath
-//    ) {
-//        // Проверяем совпадает ли количество ячеек с полученными данными фото
-//        if indexPath.row + 1 == imagesListService.photos.count {
-//            
-//            
-//            if let token = oauth2TokenStorage.token {
-//                imagesListService.fetchPhotosNextPage(token)  { [weak self] result in
-//                    guard let self = self else { return }
-//                    switch result {
-//                    case .success(let photos):
-//                        print("[SplashViewController/fetchPhotosNextPage()]: Данные фотографий получены - \(photos)")
-//                        self.photosArr = photos
-//                    case .failure(let error):
-//                        print("[SplashViewController/fetchPhotosNextPage()]: Данные фотографий не получены - \(error)")
-//                        //self.showAlertError()
-//                        break
-//                    }
-//                }
-//            } else {
-//                return
-//            }
-//            
-//            
-//        }
-//    }
+    // 3. Вычисление динамической высоты ячейки
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let imageSize = photos[indexPath.row].size
+        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        let k = (tableView.bounds.width - imageInsets.left - imageInsets.right) / imageSize.width
+        return imageSize.height * k + imageInsets.top + imageInsets.bottom
+    }
     
+    // 4. Обновить таблицу при получении загруженных данных
+    private func updateTableViewAnimated() {
+        let oldCount = photos.count
+        let newCount = imagesListService.photos.count
+        photos = imagesListService.photos
+        if oldCount != newCount {
+            tableView.performBatchUpdates {
+                let indexPath = (oldCount..<newCount).map { i in
+                    IndexPath(row: i, section: 0)
+                }
+                tableView.insertRows(at: indexPath, with: .automatic)
+            } completion: { _ in }
+        }
+        UIBlockingProgressHUD.dismiss()
+    }
+    
+    // 5. Добавить новые строки с новыми загруженными данными
+    // Метод вызывается прямо перед тем, как ячейка таблицы будет показана на экране
+    // При каждой прокрутке и отображении новой ячейки он тоже вызывается
+    func tableView(_ tableView: UITableView,
+                   willDisplay cell: UITableViewCell,
+                   forRowAt indexPath: IndexPath
+    ) {
+        // Проверяем совпадает ли количество ячеек с полученными данными фото
+        print("indexPath.row: \(indexPath.row)")
+        print("imagesListService.photos.count: \(imagesListService.photos.count)")
+        if indexPath.row + 1 == imagesListService.photos.count {
+            
+            
+            print("[tableView/willDisplay]: run fetchPhotosNextPage()")
+            imagesListService.fetchPhotosNextPage()
+        }
+        print("end")
+    }
 }
 
 extension ImagesListViewController: UITableViewDelegate {
@@ -105,47 +136,4 @@ extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "ShowSingleImage", sender: indexPath)
     }
-    
-    // Динамическая высота ячейки
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            return 0
-        }
-        
-        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        let k = (tableView.bounds.width - imageInsets.left - imageInsets.right) / image.size.width
-        
-        return image.size.height * k + imageInsets.top + imageInsets.bottom
-    }
 }
-
-/*extension ImagesListViewController {
-    
-    private func fetchPhotosNextPage(token: String) {
-        print("Вызываю fetchPhotosNextPage")
-        imagesListService.fetchPhotosNextPage(token)  { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let photos):
-                print("[SplashViewController/fetchPhotosNextPage()]: Данные фотографий получены - \(photos)")
-                self.photosArr = photos
-            case .failure(let error):
-                print("[SplashViewController/fetchPhotosNextPage()]: Данные фотографий не получены - \(error)")
-                self.showAlertError()
-                break
-            }
-        }
-    }
-    
-    private func showAlertError() {
-        let alert = UIAlertController(title: "Что-то пошло не так(",
-                                      message: "Не удалось получить ленту изображений",
-                                      preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alert.addAction(okAction)
-        let vc = self.presentedViewController ?? self
-        vc.present(alert, animated: true, completion: nil)
-    }
-    
-    
-}*/

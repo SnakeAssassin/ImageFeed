@@ -2,28 +2,32 @@ import UIKit
 
 final class ImagesListService {
     
+    // MARK: Properties
     static let shared = ImagesListService()
+    static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
-    static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private (set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
     
     private init() { }
     
+    // MARK: Methods
     
-    internal func fetchPhotosNextPage(_ token: String, completion: @escaping (Result<[Photo], Error>) -> Void) {
-        let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
+    internal func fetchPhotosNextPage() {
+        let nextPage = self.lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
         assert(Thread.isMainThread)
-        guard task == nil else { return }
-        let pageNumber: Int = 1
+        guard task == nil else {
+            print("ImagesListService/fetchPhotosNextPage: Текущий запрос еще не завершен!")
+            return
+        }
         let perPage: Int = 10
         let path = "/photos" +
-                   "?page=\(pageNumber)" +
+                   "?page=\(nextPage)" +
                    "&&per_page=\(perPage)"
         var request = URLRequest.makeHTTPRequest(path: path, httpMethod: "GET")
+        guard let token = OAuth2TokenStorage.shared.token else { return }
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        print("request: \(request)")
         let task = urlSession.data(request: request) { [weak self] (result: Result<[PhotoResult], Error>) in
             guard let self = self else { return }
             switch result {
@@ -34,19 +38,17 @@ final class ImagesListService {
                                              size: CGSize(width: photoResult[i].width, height: photoResult[i].height),
                                              createdAt: photoResult[i].createdAt.toDate(),
                                              welcomeDescription: photoResult[i].description,
-                                             thumbImageURL: photoResult[i].urls.thumb,
+                                             thumbImageURL: photoResult[i].urls.small,
                                              largeImageURL: photoResult[i].urls.full,
                                              isLiked: photoResult[i].likedByUser))
                 }
-                self.photos.append(contentsOf: photos)
-                completion(.success(self.photos))
-
-                NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self, userInfo: ["Photos": self.photos])
-                
                 self.task = nil
+                self.lastLoadedPage = nextPage
+                self.photos.append(contentsOf: photos)
+                NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self, userInfo: ["Photos": self.photos])
             case.failure(let error):
                 print("[ImagesListService/task]: Ошибка получения данных фотографий - \(error)")
-                completion(.failure(error))
+                self.task = nil
             }
         }
         self.task = task

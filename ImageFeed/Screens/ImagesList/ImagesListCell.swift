@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     
@@ -25,24 +26,41 @@ final class ImagesListCell: UITableViewCell {
         super.init(coder: coder)
         self.selectionStyle = .none
     }
+    
+    override func prepareForReuse() {
+           super.prepareForReuse()
+           
+           // Отменяем загрузку, чтобы избежать багов при переиспользовании ячеек
+        mainImageView.kf.cancelDownloadTask()
+       }
 }
-
-
 
     // MARK: - Public methods
 
 extension ImagesListCell {
     
-    func configCell(with imageName: String, isLiked: Bool) {
-        if let image = UIImage(named: imageName) {
-            mainImageView.image = image
+    func configCell(with imageURL: String, isLiked: Bool, completion: @escaping (Result<RetrieveImageResult, KingfisherError>) -> Void) {
+        
+        
+        if let url = URL(string: imageURL) {
+            mainImageView.kf.indicatorType = .activity
+            mainImageView.kf.setImage(with: url,
+                                      placeholder: UIImage(named: "Stub_cell"),
+                                      completionHandler: { result in
+                switch result {
+                case.success(let value):
+                    completion(.success(value))
+                case.failure(let error):
+                    print(error)
+                    completion(.failure(error))
+                }
+            })
         }
         dateLabel.text = dateFormatter.string(from: Date())
         likeButton.setTitle("", for: .normal)
         changeLikeButtonImageFor(state: isLiked)
         mainImageView.layer.cornerRadius = 16
         mainImageView.layer.masksToBounds = true
-        
     }
 }
 
@@ -51,7 +69,7 @@ extension ImagesListCell {
 private extension ImagesListCell {
     
     func changeLikeButtonImageFor(state isLiked: Bool) {
-        let imageName = isLiked ? "Active" : "No Active"
+        let imageName = isLiked ? "like_button_active" : "like_button_no_active"
         likeButton.setImage(UIImage(named: imageName), for: .normal)
     }
 }
