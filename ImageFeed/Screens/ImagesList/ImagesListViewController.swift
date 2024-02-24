@@ -48,7 +48,9 @@ final class ImagesListViewController: UIViewController {
         }
         if let viewController = segue.destination as? SingleImageViewController, let indexPath = sender as? IndexPath {
             let image = UIImage(named: photosName[indexPath.row])
-            viewController.setImage(image: image)
+            let imageURL = photos[indexPath.row].largeImageURL
+            //viewController.setImage(image: image)
+            viewController.imageURL = imageURL
         }
     }
 }
@@ -68,12 +70,14 @@ extension ImagesListViewController: UITableViewDataSource {
         // Из всех зарегистрированных ячеек в таблице, вернуть ячейку по идентификатору
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         
+        
         guard let cell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
-        //let imageName = photosName[indexPath.row]
+        
+        cell.delegate = self
         let imageURL = photos[indexPath.row].thumbImageURL
-        let isLiked = indexPath.row % 2 == 0
+        let isLiked = photos[indexPath.row].isLiked
         cell.configCell(with: imageURL, isLiked: isLiked) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -119,15 +123,12 @@ extension ImagesListViewController: UITableViewDataSource {
                    forRowAt indexPath: IndexPath
     ) {
         // Проверяем совпадает ли количество ячеек с полученными данными фото
-        print("indexPath.row: \(indexPath.row)")
-        print("imagesListService.photos.count: \(imagesListService.photos.count)")
+        print("[tableView/willDisplay] Текущая ячейка: \(indexPath.row)")
+        print("[tableView/willDisplay] Всего ячеек: \(imagesListService.photos.count)")
         if indexPath.row + 1 == imagesListService.photos.count {
-            
-            
             print("[tableView/willDisplay]: run fetchPhotosNextPage()")
             imagesListService.fetchPhotosNextPage()
         }
-        print("end")
     }
 }
 
@@ -135,5 +136,97 @@ extension ImagesListViewController: UITableViewDelegate {
     // Открываем картинку в новом экране через segue
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "ShowSingleImage", sender: indexPath)
+        //showSingleImageView(/*indexPath: indexPath*/)
     }
 }
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        
+        // Узнали индекс ячейки в которой нажат лайк
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+               
+        // Получили лайкнутое фото по индексу
+        let photo = photos[indexPath.row]
+        
+        // Текущее состояние лайка до нажатия и инвертируем после нажатия
+        let like = !photo.isLiked
+        // Показали загрузку-блокировку от нажатия
+        UIBlockingProgressHUD.show()
+        
+        // Отправляем POST-запрос на сервер на изменение с новым лайком
+        imagesListService.changeLike(photoId: photo.id, isLike: like) { result in
+            switch result {
+            case .success(let isLiked):
+                
+                // Синхронизируем [ImagedListVC/Photos]
+                self.photos = self.imagesListService.photos
+                
+                print("Пришел ответ от сервера: ")
+                print("Лайк который мы отправляли: \(like)")
+                print("Лайк который записался на сервере: \(isLiked)")
+                print("[ImagedListVC/Photos] Состояние лайка: \(self.photos[indexPath.row].isLiked)")
+                print("[ImagedListService/Photos] Состояние лайка: \(ImagesListService.shared.photos[indexPath.row].isLiked)")
+                
+                // Обновляем картинку лайка с новым значением (сервер)
+                cell.changeLikeButtonImageFor(state: isLiked)
+                
+                
+                // Убираем загрузку и блокировку
+                UIBlockingProgressHUD.dismiss()
+
+            case .failure (let error):
+                UIBlockingProgressHUD.dismiss()
+                print("Неудача! Лайк не поставлен: \(error)")
+                // TODO: show alert
+                return
+            }
+        }
+    }
+}
+
+//private lazy var tableView: UITableView = {
+//    let tableView = UITableView(/*frame: .zero*/)
+//    tableView.backgroundColor = .ypBlack
+//    tableView.contentInset = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+//    tableView.separatorStyle = .none
+//    tableView.translatesAutoresizingMaskIntoConstraints = false
+//    return tableView
+//}()
+//
+//private func setTableView() {
+//    view.addSubview(tableView)
+//    tableView.register(ImagesListCell.self, forCellReuseIdentifier: "ImagesListCell")
+//    NSLayoutConstraint.activate([
+//        tableView.topAnchor.constraint(equalTo: view.topAnchor),
+//        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+//    ])
+//    //tableView.registerReusableCell(cellType: ImagesListCell.self)
+//}
+//
+//private func showSingleImageView(/*indexPath: IndexPath*/) {
+//    let singleImageViewController = SingleImageViewController()
+//    print("Попытка показать VC")
+////        singleImageViewController.modalPresentationStyle = .overFullScreen
+////        singleImageViewController.modalTransitionStyle = .coverVertical
+////        singleImageViewController.hidesBottomBarWhenPushed = true
+////        tabBarController?.present(singleImageViewController, animated: true)
+//
+//    navigationController?.pushViewController(singleImageViewController, animated: true)
+//
+//    
+////        let imageURL = photos[indexPath.row].largeImageURL
+////        singleImageView.imageURL = imageURL
+//    
+//    //authViewController.delegate = self
+//    //let navigationController = UINavigationController(rootViewController: authViewController)
+//    //navigationController.modalPresentationStyle = .fullScreen
+//    //present(navigationController, animated: true, completion: nil)
+//    
+//    //tabBarController?.present(singleImageView, animated: true)
+//    //tabBarController?.navigationController?.pushViewController(singleImageView, animated: <#T##Bool#>)
+//    //navigationController?.pushViewController(singleImageView, animated: true)
+////
+//}
