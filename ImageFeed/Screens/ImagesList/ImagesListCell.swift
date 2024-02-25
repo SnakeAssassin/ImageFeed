@@ -52,9 +52,7 @@ final class ImagesListCell: UITableViewCell {
 
 extension ImagesListCell {
     
-    func configCell(with imageURL: String, isLiked: Bool, completion: @escaping (Result<RetrieveImageResult, KingfisherError>) -> Void) {
-        
-        
+    func configCell(with imageURL: String, isLiked: Bool, createdAt: String, completion: @escaping (Result<RetrieveImageResult, KingfisherError>) -> Void) {
         if let url = URL(string: imageURL) {
             mainImageView.kf.indicatorType = .activity
             mainImageView.kf.setImage(with: url,
@@ -69,7 +67,7 @@ extension ImagesListCell {
                 }
             })
         }
-        dateLabel.text = dateFormatter.string(from: Date())
+        dateLabel.text = createdAt
         likeButton.setTitle("", for: .normal)
         changeLikeButtonImageFor(state: isLiked)
         mainImageView.layer.cornerRadius = 16
@@ -82,7 +80,6 @@ extension ImagesListCell {
 extension ImagesListCell {
     
     func changeLikeButtonImageFor(state isLiked: Bool) {
-        print("[ImagesListCell/changeLikeButtonImageFor]: Вызван: \(isLiked)")
         let imageName = isLiked ? "like_button_active" : "like_button_no_active"
         likeButton.setImage(UIImage(named: imageName), for: .normal)
     }

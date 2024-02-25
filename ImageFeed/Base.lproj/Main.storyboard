@@ -9,20 +9,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Tab Bar Controller-->
-        <scene sceneID="h3e-0j-wgm">
-            <objects>
-                <tabBarController storyboardIdentifier="TabBarViewController" id="l2W-TO-rF3" customClass="TabBarController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ino-JN-Rnf">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    </tabBar>
-                </tabBarController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="PWb-3h-2Ax" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1618" y="213"/>
-        </scene>
         <!--ImageList-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -82,6 +68,10 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <sections/>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="63K-xd-aVe"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="3Yt-aT-zfW"/>
+                                </connections>
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -96,29 +86,12 @@
                     <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="PZp-MF-Zox"/>
                     <navigationItem key="navigationItem" id="xXJ-xf-NsE"/>
                     <connections>
-                        <outlet property="tableView" destination="035-mB-idu" id="PIm-gs-aYw"/>
-                        <segue destination="Ob7-ed-u0y" kind="presentation" identifier="ShowSingleImage" id="Ub7-6e-bqe"/>
+                        <outlet property="tableView" destination="035-mB-idu" id="td8-Ja-t3E"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-783" y="213"/>
-        </scene>
-        <!--Single Image View Controller-->
-        <scene sceneID="93w-WD-eSp">
-            <objects>
-                <viewController modalPresentationStyle="fullScreen" id="Ob7-ed-u0y" customClass="SingleImageViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="rg6-VU-u1E">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="TUZ-Px-L12"/>
-                        <color key="backgroundColor" name="YP Black"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="5Li-zu-Jj7"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="jgI-BE-va0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="33" y="213"/>
+            <point key="canvasLocation" x="-2111" y="52"/>
         </scene>
     </scenes>
     <resources>

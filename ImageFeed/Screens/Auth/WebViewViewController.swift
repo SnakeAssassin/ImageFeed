@@ -139,7 +139,7 @@ extension WebViewViewController {
     }
     
     private func setWebView() {
-        
+        navigationController?.navigationBar.isHidden = true
         view.addSubview(webView)
         view.sendSubviewToBack(webView)
         webView.translatesAutoresizingMaskIntoConstraints = false

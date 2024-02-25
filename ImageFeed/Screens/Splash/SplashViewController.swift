@@ -34,7 +34,7 @@ final class SplashViewController: UIViewController {
         setLogoImage()
         view.backgroundColor = .ypBlack
         
-        if let token = oauth2TokenStorage.token {
+        if oauth2TokenStorage.token != nil {
             switchToTabBarController()
         } else {
             swithToAuthController()
@@ -67,8 +67,7 @@ extension SplashViewController {
             print("[SplashViewController/switchToTabBarController()]: Window Invalid Configuration")
             return
         }
-        let tabBarController = UIStoryboard(name: "Main", bundle: .main)
-            .instantiateViewController(withIdentifier: tabBarViewControllerIdentifier)
+        let tabBarController = TabBarController()
         window.rootViewController = tabBarController
     }
     

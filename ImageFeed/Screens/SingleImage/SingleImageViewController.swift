@@ -1,11 +1,18 @@
 import UIKit
 import Kingfisher
 
+protocol SingleImageViewControllerDelegate: AnyObject {
+    
+    func dismissSingleImageViewControllerDelegate(_ vc: SingleImageViewController)
+}
+
 // MARK: - SingleImageViewController
 
 final class SingleImageViewController: UIViewController {
     
     // MARK: Properties
+    
+    weak var delegate: SingleImageViewControllerDelegate?
     
     internal var imageURL: String? {
         didSet {
@@ -66,7 +73,8 @@ final class SingleImageViewController: UIViewController {
     }
     
     @objc private func didTapButton() {
-        dismiss(animated: true, completion: nil)
+        //dismiss(animated: true, completion: nil)
+        delegate?.dismissSingleImageViewControllerDelegate(self)
     }
     
     // MARK: Lifecycle
@@ -156,6 +164,9 @@ extension SingleImageViewController: UIScrollViewDelegate {
 
 extension SingleImageViewController {
     private func setView() {
+        
+        view.backgroundColor = .ypBlack
+        
         view.addSubview(backButton)
         NSLayoutConstraint.activate([
             backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),

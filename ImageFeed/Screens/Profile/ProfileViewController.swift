@@ -61,8 +61,7 @@ final class ProfileViewController: UIViewController {
     // MARK: Actions
     
     @objc func didTapButton() {
-        OAuth2TokenStorage.shared.removeToken() // Для отладки
-        print("Токен удален")
+        showLogoutAlert()
     }
     
     
@@ -72,6 +71,26 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         startObserver()
         createView()
+    }
+    
+    // MARK: Logout
+
+    private func showLogoutAlert() {
+        let alert = UIAlertController(title: "Пока, пока!",
+                                      message: "Уверены, что хотите выйти?",
+                                      preferredStyle: .alert)
+        let alertActionYes = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            guard self != nil else { return }
+            ProfileLogoutService.shared.logout()
+        }
+        alert.addAction(alertActionYes)
+        let alertActionNo = UIAlertAction(title: "Нет", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            self.dismiss(animated: true)
+        }
+        alert.addAction(alertActionNo)
+        let vc = self.presentedViewController ?? self
+        vc.present(alert, animated: true, completion: nil)
     }
 }
 

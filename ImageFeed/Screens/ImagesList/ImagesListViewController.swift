@@ -8,9 +8,15 @@ final class ImagesListViewController: UIViewController {
     
     private let imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
-    private let photosName: [String] = Array(0..<10).map {"\($0)"}
-    private let ShowSingleImageSegueIdentifier = "ShowSingleImage"
     private var photos: [Photo] = []
+    
+    // Форматтер Date вида 01 января 2000
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ru_RU")
+        formatter.dateFormat = "dd MMMM yyyy"
+        return formatter
+    }()
     
     @IBOutlet private var tableView: UITableView!
     
@@ -18,7 +24,6 @@ final class ImagesListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imagesListService.fetchPhotosNextPage()
         startObserver()
         tableView.delegate = self
         tableView.dataSource = self
@@ -35,22 +40,16 @@ final class ImagesListViewController: UIViewController {
                 self.updateTableViewAnimated()
             }
         UIBlockingProgressHUD.show()
+        self.imagesListService.fetchPhotosNextPage()
     }
-    
     
     // MARK: Methods
     
-    // Передаем сегвею нужную картинку при нажатии на нее из таблицы
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard segue.identifier == ShowSingleImageSegueIdentifier else {
-            super.prepare(for: segue, sender: sender)
-            return
-        }
-        if let viewController = segue.destination as? SingleImageViewController, let indexPath = sender as? IndexPath {
-            let image = UIImage(named: photosName[indexPath.row])
-            let imageURL = photos[indexPath.row].largeImageURL
-            //viewController.setImage(image: image)
-            viewController.imageURL = imageURL
+    private func dateToString(from date: Date?) -> String {
+        if let date {
+            return dateFormatter.string(from: date)
+        } else {
+            return ""
         }
     }
 }
@@ -61,7 +60,6 @@ extension ImagesListViewController: UITableViewDataSource {
     
     // 1. Устанавливаем количество ячеек в секции
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //return photosName.count
         return photos.count
     }
     
@@ -69,17 +67,15 @@ extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Из всех зарегистрированных ячеек в таблице, вернуть ячейку по идентификатору
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
-        
-        
         guard let cell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
-        
         cell.delegate = self
         let imageURL = photos[indexPath.row].thumbImageURL
         let isLiked = photos[indexPath.row].isLiked
-        cell.configCell(with: imageURL, isLiked: isLiked) { [weak self] result in
-            guard let self = self else { return }
+        let date = dateToString(from: photos[indexPath.row].createdAt)
+        cell.configCell(with: imageURL, isLiked: isLiked, createdAt: date) { [weak self] result in
+            guard self != nil else { return }
             switch result {
             case .success:
                 // Перерисовываем ячейку после загрузки изображения
@@ -132,11 +128,23 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
+extension ImagesListViewController: SingleImageViewControllerDelegate {
+    func dismissSingleImageViewControllerDelegate(_ vc: SingleImageViewController) {
+        dismiss(animated: true)
+    }
+}
+
 extension ImagesListViewController: UITableViewDelegate {
-    // Открываем картинку в новом экране через segue
+    // 6. При нажатии на ячейку - открыть картинку в новом экране через segue
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "ShowSingleImage", sender: indexPath)
-        //showSingleImageView(/*indexPath: indexPath*/)
+        // Показать картинку в SingleImageViewController()
+        let singleImageViewController = SingleImageViewController()
+        singleImageViewController.delegate = self
+        let imageURL = photos[indexPath.row].largeImageURL
+        singleImageViewController.imageURL = imageURL
+        let navigationController = UINavigationController(rootViewController: singleImageViewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true, completion: nil)
     }
 }
 
@@ -145,7 +153,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
         
         // Узнали индекс ячейки в которой нажат лайк
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-               
+        
         // Получили лайкнутое фото по индексу
         let photo = photos[indexPath.row]
         
@@ -174,7 +182,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 
                 // Убираем загрузку и блокировку
                 UIBlockingProgressHUD.dismiss()
-
+                
             case .failure (let error):
                 UIBlockingProgressHUD.dismiss()
                 print("Неудача! Лайк не поставлен: \(error)")
@@ -185,48 +193,27 @@ extension ImagesListViewController: ImagesListCellDelegate {
     }
 }
 
-//private lazy var tableView: UITableView = {
-//    let tableView = UITableView(/*frame: .zero*/)
-//    tableView.backgroundColor = .ypBlack
-//    tableView.contentInset = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-//    tableView.separatorStyle = .none
-//    tableView.translatesAutoresizingMaskIntoConstraints = false
-//    return tableView
-//}()
+
+
+//    private lazy var tableView: UITableView = {
+//        let tableView = UITableView(frame: .zero)
+//        tableView.backgroundColor = .ypBlack
+//        tableView.contentInset = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+//        tableView.separatorStyle = .none
+//        tableView.translatesAutoresizingMaskIntoConstraints = false
+//        return tableView
+//    }()
 //
-//private func setTableView() {
-//    view.addSubview(tableView)
-//    tableView.register(ImagesListCell.self, forCellReuseIdentifier: "ImagesListCell")
-//    NSLayoutConstraint.activate([
-//        tableView.topAnchor.constraint(equalTo: view.topAnchor),
-//        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-//    ])
-//    //tableView.registerReusableCell(cellType: ImagesListCell.self)
-//}
-//
-//private func showSingleImageView(/*indexPath: IndexPath*/) {
-//    let singleImageViewController = SingleImageViewController()
-//    print("Попытка показать VC")
-////        singleImageViewController.modalPresentationStyle = .overFullScreen
-////        singleImageViewController.modalTransitionStyle = .coverVertical
-////        singleImageViewController.hidesBottomBarWhenPushed = true
-////        tabBarController?.present(singleImageViewController, animated: true)
-//
-//    navigationController?.pushViewController(singleImageViewController, animated: true)
-//
-//    
-////        let imageURL = photos[indexPath.row].largeImageURL
-////        singleImageView.imageURL = imageURL
-//    
-//    //authViewController.delegate = self
-//    //let navigationController = UINavigationController(rootViewController: authViewController)
-//    //navigationController.modalPresentationStyle = .fullScreen
-//    //present(navigationController, animated: true, completion: nil)
-//    
-//    //tabBarController?.present(singleImageView, animated: true)
-//    //tabBarController?.navigationController?.pushViewController(singleImageView, animated: <#T##Bool#>)
-//    //navigationController?.pushViewController(singleImageView, animated: true)
-////
-//}
+//    private func setTableView() {
+//        view.addSubview(tableView)
+//        tableView.register(ImagesListCell.self, forCellReuseIdentifier: "ImagesListCell")
+//        NSLayoutConstraint.activate([
+//            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+//            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+//        ])
+//        //tableView.registerReusableCell(cellType: ImagesListCell.self)
+//    }
+
+//        setTableView()
