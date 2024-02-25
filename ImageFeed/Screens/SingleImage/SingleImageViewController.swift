@@ -40,7 +40,6 @@ final class SingleImageViewController: UIViewController {
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        //image.image = UIImage(named: "0")
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -73,7 +72,6 @@ final class SingleImageViewController: UIViewController {
     }
     
     @objc private func didTapButton() {
-        //dismiss(animated: true, completion: nil)
         delegate?.dismissSingleImageViewControllerDelegate(self)
     }
     

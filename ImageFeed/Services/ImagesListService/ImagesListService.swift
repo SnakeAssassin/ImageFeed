@@ -18,7 +18,7 @@ final class ImagesListService {
         let nextPage = self.lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
         assert(Thread.isMainThread)
         guard task == nil else {
-            print("ImagesListService/fetchPhotosNextPage: Текущий запрос еще не завершен!")
+            print("[ImagesListService/fetchPhotosNextPage]: Текущий запрос еще не завершен!")
             return
         }
         let perPage: Int = 10
@@ -60,8 +60,6 @@ final class ImagesListService {
         guard task == nil else { return }
         let path = "/photos/\(photoId)/like"
         let httpMethod = isLike ? "POST" : "DELETE"
-        print("HTTP Method: \(httpMethod)")
-        
         var request = URLRequest.makeHTTPRequest(path: path, httpMethod: httpMethod)
         guard let token = OAuth2TokenStorage.shared.token else { return }
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -69,12 +67,9 @@ final class ImagesListService {
             guard let self = self else { return }
             switch result {
             case.success(let resultLike):
-                print("[ImagesListService/changeLike] Лайк изменен: \(resultLike.photo.likedByUser)")
                 if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
-                    // Перезаписываем лайк в выбранном фото
                     self.photos[index].isLiked = resultLike.photo.likedByUser
                 }
-                // Передаем лайк в замыкание
                 completion(.success(resultLike.photo.likedByUser))
                 self.task = nil
             case.failure(let error):

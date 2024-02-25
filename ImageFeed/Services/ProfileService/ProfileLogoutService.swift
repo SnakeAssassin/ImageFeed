@@ -12,7 +12,6 @@ final class ProfileLogoutService {
         cleanCookies()
         cleanToken()
         
-        // Меняем root-controller
         guard let window = UIApplication.shared.windows.first else {
             print("[SplashViewController/switchToTabBarController()]: Window Invalid Configuration")
             return
@@ -23,9 +22,7 @@ final class ProfileLogoutService {
     
     private func cleanCache() {
         let cache = ImageCache.default
-        // Очищает кэш в оперативной памяти
         cache.clearMemoryCache()
-        // Очищает дисковый кэш
         cache.clearDiskCache()
     }
     
@@ -34,11 +31,8 @@ final class ProfileLogoutService {
     }
     
     private func cleanCookies() {
-        // Очищаем все куки из хранилища
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
-        // Запрашиваем все данные из локального хранилища
         WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-            // Массив полученных записей удаляем из хранилища
             records.forEach { record in
                 WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
             }
