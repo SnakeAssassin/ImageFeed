@@ -20,7 +20,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Екатерина Новикова"
         label.font = UIFont.systemFont(ofSize: 23, weight: .bold)
         label.textColor = .ypWhite
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -29,7 +28,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var idLabel: UILabel = {
         let label = UILabel()
-        label.text = "@ekaterina_now"
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = .ypGray
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +36,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Hello, world!"
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = .ypWhite
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -69,8 +66,10 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        startObserver()
         createView()
+        startObserver()
+        guard let profile = profileService.profile else { return }
+        updateProfileDetails(profile: profile)
     }
     
     // MARK: Logout
@@ -99,9 +98,9 @@ final class ProfileViewController: UIViewController {
 extension ProfileViewController {
     
     private func updateProfileDetails(profile: Profile) {
-        nameLabel.text = ProfileService.shared.profile?.name
-        idLabel.text = ProfileService.shared.profile?.loginName
-        descriptionLabel.text = ProfileService.shared.profile?.bio
+        nameLabel.text = profile.name
+        idLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
     }
     
     private func startObserver() {

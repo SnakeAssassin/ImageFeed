@@ -34,8 +34,8 @@ final class SplashViewController: UIViewController {
         setLogoImage()
         view.backgroundColor = .ypBlack
         
-        if oauth2TokenStorage.token != nil {
-            switchToTabBarController()
+        if let token = oauth2TokenStorage.token {
+            fetchProfile(token: token)
         } else {
             swithToAuthController()
         }
