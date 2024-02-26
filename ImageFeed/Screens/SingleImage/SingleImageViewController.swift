@@ -10,7 +10,7 @@ protocol SingleImageViewControllerDelegate: AnyObject {
 
 final class SingleImageViewController: UIViewController {
     
-    // MARK: Properties
+    // MARK: Public Properties
     
     weak var delegate: SingleImageViewControllerDelegate?
     
@@ -19,6 +19,8 @@ final class SingleImageViewController: UIViewController {
             loadImage()
         }
     }
+    
+    // MARK: - Private Properties
     
     private var image: UIImage? {
         didSet {
@@ -65,6 +67,14 @@ final class SingleImageViewController: UIViewController {
         return button
     }()
     
+    // MARK: Lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setView()
+        scrollView.delegate = self
+    }
+    
     // MARK: Actions
     
     @objc private func didShareButton(_ sender: UIButton) {
@@ -75,13 +85,7 @@ final class SingleImageViewController: UIViewController {
         delegate?.dismissSingleImageViewControllerDelegate(self)
     }
     
-    // MARK: Lifecycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setView()
-        scrollView.delegate = self
-    }
+
 }
 
 // MARK: - Private methods

@@ -16,7 +16,6 @@
 		FE52FDFB2B83926900F41858 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE52FDFA2B83926900F41858 /* TabBarController.swift */; };
 		FE60CF582B74EA0900FC5275 /* UIBlockingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE60CF572B74EA0900FC5275 /* UIBlockingProgressHUD.swift */; };
 		FE60CF5B2B74FAA600FC5275 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE60CF5A2B74FAA600FC5275 /* ProfileService.swift */; };
-		FE60CF5D2B768F4400FC5275 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE60CF5C2B768F4400FC5275 /* Date+Extensions.swift */; };
 		FE60CF602B769BB100FC5275 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE60CF5F2B769BB100FC5275 /* NetworkService.swift */; };
 		FE60CF632B77A9A000FC5275 /* ProfileResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE60CF622B77A9A000FC5275 /* ProfileResult.swift */; };
 		FE60CF652B77AA1E00FC5275 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE60CF642B77AA1E00FC5275 /* Profile.swift */; };
@@ -39,6 +38,7 @@
 		FEBB818B2B2AF87B003A39CE /* ImageFeedUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBB818A2B2AF87B003A39CE /* ImageFeedUITestsLaunchTests.swift */; };
 		FEBCAC5D2B7D2941003F94A0 /* OAuthTokenResponseBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBCAC5C2B7D2941003F94A0 /* OAuthTokenResponseBody.swift */; };
 		FEBCAC5F2B7D51A1003F94A0 /* ProfileImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBCAC5E2B7D51A1003F94A0 /* ProfileImageService.swift */; };
+		FECCA7502B8D304A00BD54B4 /* ImagesListPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FECCA74F2B8D304A00BD54B4 /* ImagesListPhoto.swift */; };
 		FEF18FC22B8AADDA008A0245 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = FEF18FC12B8AADDA008A0245 /* ProgressHUD */; };
 		FEF18FC42B8AB203008A0245 /* ProfileLogoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF18FC32B8AB203008A0245 /* ProfileLogoutService.swift */; };
 		FEF39F852B6E323100A4BF43 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF39F842B6E323100A4BF43 /* UIColor+Extensions.swift */; };
@@ -69,7 +69,6 @@
 		FE52FDFA2B83926900F41858 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		FE60CF572B74EA0900FC5275 /* UIBlockingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBlockingProgressHUD.swift; sourceTree = "<group>"; };
 		FE60CF5A2B74FAA600FC5275 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
-		FE60CF5C2B768F4400FC5275 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
 		FE60CF5F2B769BB100FC5275 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		FE60CF622B77A9A000FC5275 /* ProfileResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileResult.swift; sourceTree = "<group>"; };
 		FE60CF642B77AA1E00FC5275 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
@@ -96,6 +95,7 @@
 		FEBB818A2B2AF87B003A39CE /* ImageFeedUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFeedUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		FEBCAC5C2B7D2941003F94A0 /* OAuthTokenResponseBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthTokenResponseBody.swift; sourceTree = "<group>"; };
 		FEBCAC5E2B7D51A1003F94A0 /* ProfileImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageService.swift; sourceTree = "<group>"; };
+		FECCA74F2B8D304A00BD54B4 /* ImagesListPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListPhoto.swift; sourceTree = "<group>"; };
 		FEF18FC32B8AB203008A0245 /* ProfileLogoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLogoutService.swift; sourceTree = "<group>"; };
 		FEF39F842B6E323100A4BF43 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -219,6 +219,7 @@
 				FE60CF642B77AA1E00FC5275 /* Profile.swift */,
 				FEBCAC5C2B7D2941003F94A0 /* OAuthTokenResponseBody.swift */,
 				FEA6D7812B86A18300164C00 /* ImagesList.swift */,
+				FECCA74F2B8D304A00BD54B4 /* ImagesListPhoto.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -316,7 +317,6 @@
 			isa = PBXGroup;
 			children = (
 				FEF39F842B6E323100A4BF43 /* UIColor+Extensions.swift */,
-				FE60CF5C2B768F4400FC5275 /* Date+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -477,7 +477,6 @@
 				FE60CF632B77A9A000FC5275 /* ProfileResult.swift in Sources */,
 				FE4732FC2B4AEB5100B21424 /* ProfileViewController.swift in Sources */,
 				FE52FDFB2B83926900F41858 /* TabBarController.swift in Sources */,
-				FE60CF5D2B768F4400FC5275 /* Date+Extensions.swift in Sources */,
 				FE60CF602B769BB100FC5275 /* NetworkService.swift in Sources */,
 				FE087CD92B5DA39200455B26 /* OAuth2TokenStorage.swift in Sources */,
 				FEBB81692B2AF87A003A39CE /* ImagesListViewController.swift in Sources */,
@@ -496,6 +495,7 @@
 				FEF39F852B6E323100A4BF43 /* UIColor+Extensions.swift in Sources */,
 				FE64B5E22B5A95A1006C69C0 /* AuthViewController.swift in Sources */,
 				FEA6D7822B86A18300164C00 /* ImagesList.swift in Sources */,
+				FECCA7502B8D304A00BD54B4 /* ImagesListPhoto.swift in Sources */,
 				FEBB81672B2AF87A003A39CE /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

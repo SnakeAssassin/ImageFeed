@@ -6,6 +6,7 @@ final class ImagesListService {
     static let shared = ImagesListService()
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private let urlSession = URLSession.shared
+    private let formatter = ISO8601DateFormatter()
     private var task: URLSessionTask?
     private (set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
@@ -18,7 +19,6 @@ final class ImagesListService {
         let nextPage = self.lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
         assert(Thread.isMainThread)
         guard task == nil else {
-            print("[ImagesListService/fetchPhotosNextPage]: Текущий запрос еще не завершен!")
             return
         }
         let perPage: Int = 10
@@ -34,20 +34,22 @@ final class ImagesListService {
             case.success(let photoResult):
                 var photos: [Photo] = []
                 for i in 0..<perPage {
-                    photos.append(Photo(id: photoResult[i].id,
-                                             size: CGSize(width: photoResult[i].width, height: photoResult[i].height),
-                                             createdAt: photoResult[i].createdAt.toDate(),
-                                             welcomeDescription: photoResult[i].description,
-                                             thumbImageURL: photoResult[i].urls.small,
-                                             largeImageURL: photoResult[i].urls.full,
-                                             isLiked: photoResult[i].likedByUser))
+                    photos.append(
+                        Photo(
+                            id: photoResult[i].id,
+                            size: CGSize(width: photoResult[i].width, height: photoResult[i].height),
+                            createdAt: self.formatter.date(from: photoResult[i].createdAt ?? ""),
+                            welcomeDescription: photoResult[i].description ?? "",
+                            thumbImageURL: photoResult[i].urls.small,
+                            largeImageURL: photoResult[i].urls.full,
+                            isLiked: photoResult[i].likedByUser))
                 }
                 self.task = nil
                 self.lastLoadedPage = nextPage
                 self.photos.append(contentsOf: photos)
                 NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: self, userInfo: ["Photos": self.photos])
             case.failure(let error):
-                print("[ImagesListService/task]: Ошибка получения данных фотографий - \(error)")
+                print(error.localizedDescription)
                 self.task = nil
             }
         }
@@ -73,7 +75,7 @@ final class ImagesListService {
                 completion(.success(resultLike.photo.likedByUser))
                 self.task = nil
             case.failure(let error):
-                print("[ImagesListService/changeLike]: Поставить лайк неудалось - \(error)")
+                print(error.localizedDescription)
                 completion(.failure(error))
                 self.task = nil
             }

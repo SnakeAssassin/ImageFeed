@@ -80,7 +80,7 @@ final class ProfileViewController: UIViewController {
                                       message: "Уверены, что хотите выйти?",
                                       preferredStyle: .alert)
         let alertActionYes = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
-            guard self != nil else { return }
+            guard let self else { return }
             ProfileLogoutService.shared.logout()
         }
         alert.addAction(alertActionYes)
