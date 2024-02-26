@@ -20,6 +20,15 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet private weak var likeButton: UIButton!
     @IBOutlet private weak var dateLabel: UILabel!
     
+//    // MARK: Private properties
+//    
+//    private lazy var dateFormatter: DateFormatter = {
+//        let formatter = DateFormatter()
+//        formatter.dateStyle = .long
+//        formatter.timeStyle = .none
+//        return formatter
+//    }()
+    
     // MARK: Initializaters
     
     required init?(coder: NSCoder) {

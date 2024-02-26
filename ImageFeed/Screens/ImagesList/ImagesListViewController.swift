@@ -40,6 +40,16 @@ final class ImagesListViewController: UIViewController {
         UIBlockingProgressHUD.show()
         self.imagesListService.fetchPhotosNextPage()
     }
+    
+    // MARK: Methods
+    
+//    private func dateToString(from date: Date?) -> String {
+//        if let date {
+//            return dateFormatter.string(from: date)
+//        } else {
+//            return ""
+//        }
+//    }
 }
 
 // MARK: - Extension Methods
