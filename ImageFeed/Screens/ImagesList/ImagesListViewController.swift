@@ -40,16 +40,6 @@ final class ImagesListViewController: UIViewController {
         UIBlockingProgressHUD.show()
         self.imagesListService.fetchPhotosNextPage()
     }
-    
-    // MARK: Methods
-    
-    private func dateToString(from date: Date?) -> String {
-        if let date {
-            return dateFormatter.string(from: date)
-        } else {
-            return ""
-        }
-    }
 }
 
 // MARK: - Extension Methods
@@ -71,9 +61,9 @@ extension ImagesListViewController: UITableViewDataSource {
         cell.delegate = self
         let imageURL = photos[indexPath.row].thumbImageURL
         let isLiked = photos[indexPath.row].isLiked
-        let date = dateToString(from: photos[indexPath.row].createdAt)
-        cell.configCell(with: imageURL, isLiked: isLiked, createdAt: date) { [weak self] result in
-            guard self != nil else { return }
+        let createdAt = photos[indexPath.row].createdAt == nil ? "" : dateFormatter.string(from: photos[indexPath.row].createdAt!)
+        cell.configCell(with: imageURL, isLiked: isLiked, createdAt: createdAt) { [weak self] result in
+            guard let self else { return }
             switch result {
             case .success:
                 // Перерисовываем ячейку после загрузки изображения
@@ -156,7 +146,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 UIBlockingProgressHUD.dismiss()
             case .failure (let error):
                 UIBlockingProgressHUD.dismiss()
-                print("Неудача! Лайк не поставлен: \(error)")
+                print(error.localizedDescription)
                 return
             }
         }

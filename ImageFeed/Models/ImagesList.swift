@@ -2,7 +2,7 @@ import Foundation
 
 struct PhotoResult: Decodable {
     let id: String
-    let createdAt: String
+    let createdAt: String?
     let width: Int
     let height: Int
     let likedByUser: Bool
@@ -16,16 +16,6 @@ struct PhotoURLs: Decodable {
     let regular: String
     let small: String
     let thumb: String
-}
-
-struct Photo {
-    let id: String
-    let size: CGSize
-    let createdAt: Date?
-    let welcomeDescription: String?
-    let thumbImageURL: String
-    let largeImageURL: String
-    var isLiked: Bool
 }
 
 struct PhotoLikeResult: Decodable {

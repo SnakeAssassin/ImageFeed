@@ -20,29 +20,24 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet private weak var likeButton: UIButton!
     @IBOutlet private weak var dateLabel: UILabel!
     
-    // MARK: Private properties
-    
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        return formatter
-    }()
-    
-    @IBAction private func likeButtonClicked() {
-        delegate?.imageListCellDidTapLike(self)
-    }
-    
-    // MARK: Lifecycle
+    // MARK: Initializaters
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         self.selectionStyle = .none
     }
     
+    // MARK: Methods
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         mainImageView.kf.cancelDownloadTask()
+    }
+    
+    // MARK: IBAction
+    
+    @IBAction private func likeButtonClicked() {
+        delegate?.imageListCellDidTapLike(self)
     }
 }
 
@@ -60,7 +55,6 @@ extension ImagesListCell {
                 case.success(let value):
                     completion(.success(value))
                 case.failure(let error):
-                    print("[ImagesListCell/configCell]: Ошибка загрузки изображения - \(error)")
                     completion(.failure(error))
                 }
             })
