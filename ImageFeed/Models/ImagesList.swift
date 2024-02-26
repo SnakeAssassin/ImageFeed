@@ -21,3 +21,4 @@ struct PhotoURLs: Decodable {
 struct PhotoLikeResult: Decodable {
     let photo: PhotoResult
 }
+
