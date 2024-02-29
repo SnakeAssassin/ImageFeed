@@ -10,9 +10,38 @@ protocol WebViewViewControllerDelegate: AnyObject {
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
 
+// MARK: - WebView Controller Protocol
+
+/// I. Объявляем протокол с переменной презентера
+/// Тут будет ...
+public protocol WebViewViewControllerProtocol: AnyObject {
+    var presenter: WebViewPresenterProtocol? { get set }
+    
+    /// 2. Выносим логику создания/отправки запроса в Presenter():
+    /// 2.1 Создаем метод
+    func load(request: URLRequest)
+    
+    /// 3.2 Выносим ответственность в протокол, чтобы презентер мог их вызвать
+    func setProgressValue(_ newValue: Float)
+    func setProgressHidden(_ isHidden: Bool)
+    
+    ///
+    
+}
 // MARK: - WebView Controller
 
-final class WebViewViewController: UIViewController, WKNavigationDelegate  {
+final class WebViewViewController: UIViewController, WKNavigationDelegate, WebViewViewControllerProtocol  {
+    
+    /// Класс реализует протокол и создает переменную презентера
+    var presenter: WebViewPresenterProtocol?
+    /// 2.2 Реализуем метод
+    func load(request: URLRequest) {
+        webView.load(request)
+    }
+
+    
+    
+    
     
     // MARK: Private properties
     
@@ -56,17 +85,18 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     override func viewDidLoad() {
         super.viewDidLoad()
         createView()
-        loadURLWebView()
+        /// 2.5 Делаем Request URL через презентер
+        presenter?.viewDidLoad()    // loadURLWebView() вынесли в presenter
         setupProgressObservation()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-    }
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//    }
+//    
+//    override func viewDidDisappear(_ animated: Bool) {
+//        super.viewDidDisappear(animated)
+//    }
 }
 
 // MARK: - Navigation Action
@@ -87,20 +117,27 @@ extension WebViewViewController {
     }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
-        if let url = navigationAction.request.url,
-           let urlComponents = URLComponents(string: url.absoluteString),
-           urlComponents.path == "/oauth/authorize/native",
-           let items = urlComponents.queryItems,
-           let codeItem = items.first(where: { $0.name == "code" })
-        {
-            return codeItem.value
-        } else {
-            return nil
+        if let url = navigationAction.request.url {
+            return presenter?.code(from: url)
         }
+        return nil
     }
+    
+//    private func code(from navigationAction: WKNavigationAction) -> String? {
+//        if let url = navigationAction.request.url,
+//           let urlComponents = URLComponents(string: url.absoluteString),
+//           urlComponents.path == "/oauth/authorize/native",
+//           let items = urlComponents.queryItems,
+//           let codeItem = items.first(where: { $0.name == "code" })
+//        {
+//            return codeItem.value
+//        } else {
+//            return nil
+//        }
+//    }
 }
 
-// MARK: - Update Progress
+// MARK: - Update Progress Observer
 
 extension WebViewViewController {
     private func setupProgressObservation() {
@@ -109,14 +146,25 @@ extension WebViewViewController {
              options: [],
              changeHandler: { [weak self] _, _ in
                  guard let self = self else { return }
-                 self.updateProgress()
+                 /// 3.5 Добавляем уведомление для презентера о том что WebView обновил значение estimatedProgress
+                 self.presenter?.didUpdateProgressValue(webView.estimatedProgress)  // self.updateProgress() вынесли в presenter
+                 
              })
     }
     
-    private func updateProgress() {
-        progressView.progress = Float(webView.estimatedProgress)
-        progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
+//    private func updateProgress() {
+//        progressView.progress = Float(webView.estimatedProgress)
+//        progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
+//    }
+    /// 3.1 Разбиваем метод для презентера
+    func setProgressValue(_ newValue: Float) {
+        progressView.progress = newValue
     }
+    
+    func setProgressHidden(_ isHidden: Bool) {
+        progressView.isHidden = isHidden
+    }
+    
 }
 
 // MARK: - Create View
@@ -163,20 +211,20 @@ extension WebViewViewController {
 }
 
 // MARK: - Request URL
-
-extension WebViewViewController {
-    
-    private func loadURLWebView() {
-        var urlComponents = URLComponents(string: UnsplashAuthorizeURLString)!
-        urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: AccessKey),
-            URLQueryItem(name: "redirect_uri", value: RedirectURI),
-            URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: AccessScope)
-        ]
-        
-        let url = urlComponents.url!
-        let request = URLRequest(url: url)
-        webView.load(request)
-    }
-}
+//
+//extension WebViewViewController {
+//    
+//    private func loadURLWebView() {
+//        var urlComponents = URLComponents(string: UnsplashAuthorizeURLString)!
+//        urlComponents.queryItems = [
+//            URLQueryItem(name: "client_id", value: AccessKey),
+//            URLQueryItem(name: "redirect_uri", value: RedirectURI),
+//            URLQueryItem(name: "response_type", value: "code"),
+//            URLQueryItem(name: "scope", value: AccessScope)
+//        ]
+//        
+//        let url = urlComponents.url!
+//        let request = URLRequest(url: url)
+//        webView.load(request)
+//    }
+//}

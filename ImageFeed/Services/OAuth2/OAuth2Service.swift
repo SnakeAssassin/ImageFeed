@@ -30,12 +30,12 @@ final class OAuth2Service {
         task?.cancel()
         lastCode = code
         let path = "/oauth/token" +
-                   "?client_id=\(AccessKey)" +
-                   "&&client_secret=\(SecretKey)" +
-                   "&&redirect_uri=\(RedirectURI)" +
+        "?client_id=\(AuthConfiguration.standard.accessKey)" +
+        "&&client_secret=\(AuthConfiguration.standard.secretKey)" +
+        "&&redirect_uri=\(AuthConfiguration.standard.redirectURI)" +
                    "&&code=\(code)" +
                    "&&grant_type=authorization_code"
-        let request = URLRequest.makeHTTPRequest(path: path, httpMethod: "GET", baseURL: BaseURL)
+        let request = URLRequest.makeHTTPRequest(path: path, httpMethod: "GET", baseURL: AuthConfiguration.standard.defaultBaseURL)
         let task = urlSession.data(request: request) { [weak self] (result: Result<OAuthTokenResult, Error>) in
             guard let self = self else { return }
             switch result {

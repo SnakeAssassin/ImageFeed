@@ -83,6 +83,16 @@ extension AuthViewController {
     private func showWebViewController() {
         let webViewViewController = WebViewViewController()
         navigationController?.pushViewController(webViewViewController, animated: true)
+        
+        /// III. Соединяем вьюконтроллер и презентер между собой через протоколы
+        let authHelper = AuthHelper()                       // Так как изменен инициализатор в WebViewPresenter, 
+                                                            // то создаем экзепляр для передачи в webViewPresenter
+        let webViewPresenter = WebViewPresenter(authHelper: authHelper) // Создаем экземпляр презентора
+        webViewViewController.presenter = webViewPresenter  // Соединяем презентер контроллера с презентером()
+        webViewPresenter.view = webViewViewController       // Соединяем вью презентера с контроллером
+        webViewViewController.delegate = self
+        
+        
         webViewViewController.delegate = self
     }
 }
