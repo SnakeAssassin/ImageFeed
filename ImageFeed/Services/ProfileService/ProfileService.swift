@@ -25,7 +25,7 @@ final class ProfileService {
                 completion(.success(self.profile!))
                 self.task = nil
             case.failure(let error):
-                print("Ошибка получения данных профиля: \(error)")
+                print("[ProfileService/task] Ошибка получения данных профиля – \(error)")
                 completion(.failure(error))
             }
         }

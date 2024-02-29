@@ -35,7 +35,7 @@ final class SplashViewController: UIViewController {
         view.backgroundColor = .ypBlack
         
         if let token = oauth2TokenStorage.token {
-            switchToTabBarController()
+            fetchProfile(token: token)
         } else {
             swithToAuthController()
         }
@@ -64,11 +64,10 @@ extension SplashViewController {
     
     private func switchToTabBarController() {
         guard let window = UIApplication.shared.windows.first else {
-            print("SplashViewController: Window Invalid Configuration")
+            print("[SplashViewController/switchToTabBarController()]: Window Invalid Configuration")
             return
         }
-        let tabBarController = UIStoryboard(name: "Main", bundle: .main)
-            .instantiateViewController(withIdentifier: tabBarViewControllerIdentifier)
+        let tabBarController = TabBarController()
         window.rootViewController = tabBarController
     }
     
@@ -102,7 +101,7 @@ extension SplashViewController: AuthViewControllerDelegate {
             case .success(let token):
                 self.fetchProfile(token: token)
             case .failure(let error):
-                print("Данные токена не получены \(error)")
+                print("[SplashViewController/fetchOAuthToken()]: Данные токена не получены - \(error)")
                 self.showAlertError()
                 break
             }
@@ -120,7 +119,7 @@ extension SplashViewController: AuthViewControllerDelegate {
                 self.switchToTabBarController()
             case .failure(let error):
                 UIBlockingProgressHUD.dismiss()
-                print("Данные профиля не получены \(error)")
+                print("[SplashViewController/fetchProfile()]: Данные профиля не получены - \(error)")
                 self.showAlertError()
                 break
             }

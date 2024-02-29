@@ -20,7 +20,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Екатерина Новикова"
         label.font = UIFont.systemFont(ofSize: 23, weight: .bold)
         label.textColor = .ypWhite
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -29,7 +28,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var idLabel: UILabel = {
         let label = UILabel()
-        label.text = "@ekaterina_now"
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = .ypGray
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +36,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Hello, world!"
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = .ypWhite
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -61,8 +58,7 @@ final class ProfileViewController: UIViewController {
     // MARK: Actions
     
     @objc func didTapButton() {
-        OAuth2TokenStorage.shared.removeToken() // Для отладки
-        print("Токен удален")
+        showLogoutAlert()
     }
     
     
@@ -70,8 +66,30 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        startObserver()
         createView()
+        startObserver()
+        guard let profile = profileService.profile else { return }
+        updateProfileDetails(profile: profile)
+    }
+    
+    // MARK: Logout
+
+    private func showLogoutAlert() {
+        let alert = UIAlertController(title: "Пока, пока!",
+                                      message: "Уверены, что хотите выйти?",
+                                      preferredStyle: .alert)
+        let alertActionYes = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            guard let self else { return }
+            ProfileLogoutService.shared.logout()
+        }
+        alert.addAction(alertActionYes)
+        let alertActionNo = UIAlertAction(title: "Нет", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            self.dismiss(animated: true)
+        }
+        alert.addAction(alertActionNo)
+        let vc = self.presentedViewController ?? self
+        vc.present(alert, animated: true, completion: nil)
     }
 }
 
@@ -80,9 +98,9 @@ final class ProfileViewController: UIViewController {
 extension ProfileViewController {
     
     private func updateProfileDetails(profile: Profile) {
-        nameLabel.text = ProfileService.shared.profile?.name
-        idLabel.text = ProfileService.shared.profile?.loginName
-        descriptionLabel.text = ProfileService.shared.profile?.bio
+        nameLabel.text = profile.name
+        idLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
     }
     
     private func startObserver() {
@@ -104,7 +122,7 @@ extension ProfileViewController {
         else { return }
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(with: url,
-                                     placeholder: UIImage(named: "Stub"))
+                                     placeholder: UIImage(named: "Stub_profile"))
     }
 }
 
