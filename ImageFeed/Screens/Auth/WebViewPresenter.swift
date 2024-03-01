@@ -21,7 +21,7 @@ public protocol WebViewPresenterProtocol {
 final class WebViewPresenter: WebViewPresenterProtocol {
     
     
-    var view: WebViewViewControllerProtocol?
+    weak var view: WebViewViewControllerProtocol?
     
     /// 5.4 Добавляем хелпер в презентер
     var authHelper: AuthHelperProtocol

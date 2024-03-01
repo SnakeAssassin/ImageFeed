@@ -91,9 +91,6 @@ extension AuthViewController {
         webViewViewController.presenter = webViewPresenter  // Соединяем презентер контроллера с презентером()
         webViewPresenter.view = webViewViewController       // Соединяем вью презентера с контроллером
         webViewViewController.delegate = self
-        
-        
-        webViewViewController.delegate = self
     }
 }
 

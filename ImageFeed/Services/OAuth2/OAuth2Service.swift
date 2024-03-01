@@ -35,7 +35,7 @@ final class OAuth2Service {
         "&&redirect_uri=\(AuthConfiguration.standard.redirectURI)" +
                    "&&code=\(code)" +
                    "&&grant_type=authorization_code"
-        let request = URLRequest.makeHTTPRequest(path: path, httpMethod: "GET", baseURL: AuthConfiguration.standard.defaultBaseURL)
+        let request = URLRequest.makeHTTPRequest(path: path, httpMethod: "GET", baseURL: AuthConfiguration.standard.baseURL)
         let task = urlSession.data(request: request) { [weak self] (result: Result<OAuthTokenResult, Error>) in
             guard let self = self else { return }
             switch result {

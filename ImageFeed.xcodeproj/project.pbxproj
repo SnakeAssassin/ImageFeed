@@ -46,6 +46,8 @@
 		FEF18FC22B8AADDA008A0245 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = FEF18FC12B8AADDA008A0245 /* ProgressHUD */; };
 		FEF18FC42B8AB203008A0245 /* ProfileLogoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF18FC32B8AB203008A0245 /* ProfileLogoutService.swift */; };
 		FEF39F852B6E323100A4BF43 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF39F842B6E323100A4BF43 /* UIColor+Extensions.swift */; };
+		FEFD328E2B91D90000DF916A /* ProfilePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEFD328D2B91D90000DF916A /* ProfilePresenter.swift */; };
+		FEFD32902B9210D600DF916A /* ImagesListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEFD328F2B9210D600DF916A /* ImagesListPresenter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +116,8 @@
 		FECCA74F2B8D304A00BD54B4 /* ImagesListPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListPhoto.swift; sourceTree = "<group>"; };
 		FEF18FC32B8AB203008A0245 /* ProfileLogoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLogoutService.swift; sourceTree = "<group>"; };
 		FEF39F842B6E323100A4BF43 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
+		FEFD328D2B91D90000DF916A /* ProfilePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenter.swift; sourceTree = "<group>"; };
+		FEFD328F2B9210D600DF916A /* ImagesListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListPresenter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +209,7 @@
 			isa = PBXGroup;
 			children = (
 				FE4732FB2B4AEB5100B21424 /* ProfileViewController.swift */,
+				FEFD328D2B91D90000DF916A /* ProfilePresenter.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -261,6 +266,7 @@
 			isa = PBXGroup;
 			children = (
 				FEBB81682B2AF87A003A39CE /* ImagesListViewController.swift */,
+				FEFD328F2B9210D600DF916A /* ImagesListPresenter.swift */,
 				FE9211902B3B0B8A00BD6186 /* ImagesListCell.swift */,
 			);
 			path = ImagesList;
@@ -566,12 +572,14 @@
 				FE60CF582B74EA0900FC5275 /* UIBlockingProgressHUD.swift in Sources */,
 				FE4732FF2B4C443E00B21424 /* SingleImageViewController.swift in Sources */,
 				FE527DDC2B90F6F000940115 /* WebViewPresenter.swift in Sources */,
+				FEFD328E2B91D90000DF916A /* ProfilePresenter.swift in Sources */,
 				FE9211912B3B0B8A00BD6186 /* ImagesListCell.swift in Sources */,
 				FEBB81652B2AF87A003A39CE /* AppDelegate.swift in Sources */,
 				FEF39F852B6E323100A4BF43 /* UIColor+Extensions.swift in Sources */,
 				FE64B5E22B5A95A1006C69C0 /* AuthViewController.swift in Sources */,
 				FEA6D7822B86A18300164C00 /* ImagesList.swift in Sources */,
 				FECCA7502B8D304A00BD54B4 /* ImagesListPhoto.swift in Sources */,
+				FEFD32902B9210D600DF916A /* ImagesListPresenter.swift in Sources */,
 				FEBB81672B2AF87A003A39CE /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -18,14 +18,16 @@ struct AuthConfiguration {
                                  secretKey: Constants.SecretKey,
                                  redirectURI: Constants.RedirectURI,
                                  accessScope: Constants.AccessScope,
+                                 baseURL: Constants.BaseURL,
                                  authURLString: Constants.UnsplashAuthorizeURLString,
-                                 defaultBaseURL: Constants.BaseURL)
+                                 defaultBaseURL: Constants.DefaultBaseURL)
     }
     
     let accessKey: String
     let secretKey: String
     let redirectURI: String
     let accessScope: String
+    let baseURL: URL
     let defaultBaseURL: URL
     let authURLString: String
     
@@ -33,12 +35,14 @@ struct AuthConfiguration {
          secretKey: String,
          redirectURI: String,
          accessScope: String,
+         baseURL: URL,
          authURLString: String,
          defaultBaseURL: URL) {
         self.accessKey = accessKey
         self.secretKey = secretKey
         self.redirectURI = redirectURI
         self.accessScope = accessScope
+        self.baseURL = baseURL
         self.defaultBaseURL = defaultBaseURL
         self.authURLString = authURLString
     }
