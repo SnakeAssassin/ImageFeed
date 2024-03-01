@@ -24,9 +24,6 @@ public protocol WebViewViewControllerProtocol: AnyObject {
     /// 3.2 Выносим ответственность в протокол, чтобы презентер мог их вызвать
     func setProgressValue(_ newValue: Float)
     func setProgressHidden(_ isHidden: Bool)
-    
-    ///
-    
 }
 // MARK: - WebView Controller
 
@@ -39,10 +36,6 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate, WebVi
         webView.load(request)
     }
 
-    
-    
-    
-    
     // MARK: Private properties
     
     weak var delegate: WebViewViewControllerDelegate?
