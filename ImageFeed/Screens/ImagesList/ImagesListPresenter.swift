@@ -1,11 +1,9 @@
 import Foundation
 
-// MARK: - ImagesListPresenterProtocol
+// MARK: - ImagesListPresenter Protocol
 
 public protocol ImagesListPresenterProtocol {
-    
     var view: ImagesListControllerProtocol? { get set }
-    
     func viewDidLoad()
     func getPhotosCount() -> Int
     func getCellData(indexPath: IndexPath) -> (imageURL: String, isLiked: Bool, createdAt: String)
@@ -14,9 +12,13 @@ public protocol ImagesListPresenterProtocol {
     func changeLike(indexPath: IndexPath, _ completion: @escaping (Result<Bool, Error>) -> ())
 }
 
+// MARK: - ImagesList Presenter
+
 final class ImagesListPresenter: ImagesListPresenterProtocol {
-    weak var view: ImagesListControllerProtocol?
     
+    // MARK: Properties
+    
+    weak var view: ImagesListControllerProtocol?
     private let imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
     private var photos: [Photo] = []
@@ -27,34 +29,11 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         return formatter
     }()
     
+    // MARK: Public Methods
+    
     func viewDidLoad() {
         startObserver()
         self.imagesListService.fetchPhotosNextPage()
-    }
-    
-    private func startObserver() {
-        imagesListServiceObserver = NotificationCenter.default.addObserver(
-            forName: ImagesListService.didChangeNotification,
-            object: nil,
-            queue: .main) {
-                [weak self] _ in
-                guard let self = self else { return }
-                updatePhotos()
-            }
-        
-    }
-    
-    private func updatePhotos() {
-        let oldCount = photos.count
-        let newCount = imagesListService.photos.count
-        photos = imagesListService.photos
-        if oldCount != newCount {
-            let indexPath = (oldCount..<newCount).map { i in
-                IndexPath(row: i, section: 0)
-                
-            }
-            view?.updateTableViewAnimated(indexPath: indexPath)
-        }
     }
     
     func getPhotosCount() -> Int {
@@ -65,9 +44,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         let imageURL = photos[indexPath.row].thumbImageURL
         let isLiked = photos[indexPath.row].isLiked
         let createdAt = photos[indexPath.row].createdAt == nil ? "" : dateFormatter.string(from: photos[indexPath.row].createdAt!)
-        
         return (imageURL, isLiked, createdAt)
-        
     }
     
     func getPhoto(indexPath: IndexPath) -> Photo {
@@ -90,6 +67,31 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
             case .failure(let error):
                 completion(.failure(error))
             }
+        }
+    }
+    
+    // MARK: Private Methods
+    
+    private func startObserver() {
+        imagesListServiceObserver = NotificationCenter.default.addObserver(
+            forName: ImagesListService.didChangeNotification, 
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            updatePhotos()
+        }
+    }
+    
+    private func updatePhotos() {
+        let oldCount = photos.count
+        let newCount = imagesListService.photos.count
+        photos = imagesListService.photos
+        if oldCount != newCount {
+            let indexPath = (oldCount..<newCount).map { i in
+                IndexPath(row: i, section: 0)
+            }
+            view?.updateTableViewAnimated(indexPath: indexPath)
         }
     }
 }

@@ -5,9 +5,7 @@ import Kingfisher
 // MARK: - Profile View Controller Protocol
 
 public protocol ImagesListControllerProtocol: AnyObject {
-    
     var presenter: ImagesListPresenterProtocol? { get set }
-    
     func updateTableViewAnimated(indexPath: [IndexPath])
 }
 
@@ -16,20 +14,15 @@ final class ImagesListViewController: UIViewController, ImagesListControllerProt
     // MARK: Properties
     
     var presenter: ImagesListPresenterProtocol?
-
     private var imagesListServiceObserver: NSObjectProtocol?
-    
     @IBOutlet private var tableView: UITableView!
     
     // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         presenter?.viewDidLoad()
         UIBlockingProgressHUD.show()
-        
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
@@ -40,7 +33,6 @@ final class ImagesListViewController: UIViewController, ImagesListControllerProt
 
 extension ImagesListViewController: UITableViewDataSource {
     
-    // 0. Обновить таблицу при получении загруженных данных
     func updateTableViewAnimated(indexPath: [IndexPath]) {
         tableView.performBatchUpdates {
             tableView.insertRows(at: indexPath, with: .automatic)
@@ -48,14 +40,11 @@ extension ImagesListViewController: UITableViewDataSource {
         UIBlockingProgressHUD.dismiss()
     }
     
-    // 1. Устанавливаем количество ячеек в секции
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return presenter?.getPhotosCount() ?? 0
     }
     
-    // 2. Наполняем каждую ячейку внутри таблицы данными
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Из всех зарегистрированных ячеек в таблице, вернуть ячейку по идентификатору
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         guard let cell = cell as? ImagesListCell else {
             return UITableViewCell()
@@ -70,7 +59,6 @@ extension ImagesListViewController: UITableViewDataSource {
                 guard let self else { return }
                 switch result {
                 case .success:
-                    // Перерисовываем ячейку после загрузки изображения
                     tableView.reloadRows(at: [indexPath], with: .automatic)
                 case .failure:
                     return
@@ -80,7 +68,6 @@ extension ImagesListViewController: UITableViewDataSource {
         return cell
     }
     
-    // 3. Вычисление динамической высоты ячейки
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let presenter = presenter else { return 0 }
         let photo = presenter.getPhoto(indexPath: indexPath)
@@ -89,7 +76,6 @@ extension ImagesListViewController: UITableViewDataSource {
         return photo.size.height * k + imageInsets.top + imageInsets.bottom
     }
     
-    // 4. Добавить новые строки с новыми загруженными данными, если последняя фотография
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath
     ) {
         guard let presenter = presenter else { return }
@@ -104,9 +90,7 @@ extension ImagesListViewController: SingleImageViewControllerDelegate {
 }
 
 extension ImagesListViewController: UITableViewDelegate {
-    // 6. При нажатии на ячейку - открыть картинку в новом экране через segue
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Показать картинку в SingleImageViewController()
         guard let presenter = presenter else { return }
         let photo = presenter.getPhoto(indexPath: indexPath)
         let singleImageViewController = SingleImageViewController()
@@ -121,7 +105,6 @@ extension ImagesListViewController: UITableViewDelegate {
 
 extension ImagesListViewController: ImagesListCellDelegate {
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
-        
         guard let indexPath = tableView.indexPath(for: cell),
               let presenter = presenter else { return }
         UIBlockingProgressHUD.show()

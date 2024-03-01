@@ -3,18 +3,18 @@ import UIKit
 // MARK: - AuthViewController Delegate
 
 protocol AuthViewControllerDelegate: AnyObject {
-    
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
 }
-
 
 // MARK: - AuthViewController
 
 final class AuthViewController: UIViewController {
     
-    // MARK: Private properties
+    // MARK: Public Properties
     
     weak var delegate: AuthViewControllerDelegate?
+    
+    // MARK: Private properties
     
     private lazy var logoImage: UIImageView = {
         let image = UIImageView()
@@ -41,12 +41,6 @@ final class AuthViewController: UIViewController {
         return button
     }()
     
-    // MARK: Actions
-    
-    @objc private func didTapButton() {
-        showWebViewController()
-    }
-    
     // MARK: Lifecycle
     
     override func viewDidLoad() {
@@ -54,6 +48,12 @@ final class AuthViewController: UIViewController {
         setLogoImage()
         setLoginButton()
         view.backgroundColor = .ypBlack
+    }
+    
+    // MARK: IB Actions
+    
+    @objc private func didTapButton() {
+        showWebViewController()
     }
     
     // MARK: Create View
@@ -76,20 +76,16 @@ final class AuthViewController: UIViewController {
     }
 }
 
-// MARK: - Prepare for Segue
+// MARK: - Navigation
 
 extension AuthViewController {
-    
     private func showWebViewController() {
         let webViewViewController = WebViewViewController()
         navigationController?.pushViewController(webViewViewController, animated: true)
-        
-        /// III. Соединяем вьюконтроллер и презентер между собой через протоколы
-        let authHelper = AuthHelper()                       // Так как изменен инициализатор в WebViewPresenter, 
-                                                            // то создаем экзепляр для передачи в webViewPresenter
-        let webViewPresenter = WebViewPresenter(authHelper: authHelper) // Создаем экземпляр презентора
-        webViewViewController.presenter = webViewPresenter  // Соединяем презентер контроллера с презентером()
-        webViewPresenter.view = webViewViewController       // Соединяем вью презентера с контроллером
+        let authHelper = AuthHelper()
+        let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+        webViewViewController.presenter = webViewPresenter
+        webViewPresenter.view = webViewViewController
         webViewViewController.delegate = self
     }
 }
@@ -97,7 +93,6 @@ extension AuthViewController {
 // MARK: - AuthView Delegate
 
 extension AuthViewController: WebViewViewControllerDelegate {
-    
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         delegate?.authViewController(self, didAuthenticateWithCode: code)
     }
