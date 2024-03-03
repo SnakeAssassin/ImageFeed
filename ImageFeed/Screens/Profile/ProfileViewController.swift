@@ -6,7 +6,8 @@ import Kingfisher
 public protocol ProfileViewControllerProtocol: AnyObject {
     
     var presenter: ProfilePresenterProtocol? { get set }
-    func updateProfileDetails()
+    func updateProfileDetails(profile: Profile)
+    func updateAvatar()
 }
 
 // MARK: - Profile View Controller
@@ -16,7 +17,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     // MARK: Properties
     
     var presenter: ProfilePresenterProtocol?
-    private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var profileImageView: UIImageView = {
         let image = UIImageView()
@@ -76,7 +76,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter?.viewDidLoad()
-        startObserver()
         setView()
     }
     
@@ -105,29 +104,17 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
 
 extension ProfileViewController {
     
-    private func updateAvatar() {
+    func updateAvatar() {
         profileImageView.kf.indicatorType = .activity
         let url = presenter?.getImageURL()
         profileImageView.kf.setImage(with: url,
                                      placeholder: UIImage(named: "Stub_profile"))
     }
     
-    func updateProfileDetails() {
-        nameLabel.text = presenter?.nameLabel
-        loginLabel.text = presenter?.loginLabel
-        descriptionLabel.text = presenter?.descriptionLabel
-    }
-    
-    private func startObserver() {
-        profileImageServiceObserver = NotificationCenter.default.addObserver(
-            forName: ProfileImageService.DidChangeNotification,
-            object: nil,
-            queue: .main) {
-                [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        updateAvatar()
+    func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
     }
 }
 

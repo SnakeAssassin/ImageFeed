@@ -15,17 +15,21 @@ final class ImagesListViewController: UIViewController, ImagesListControllerProt
     
     var presenter: ImagesListPresenterProtocol?
     private var imagesListServiceObserver: NSObjectProtocol?
-    @IBOutlet private var tableView: UITableView!
+    
+    private let tableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .ypBlack
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
     
     // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setTableView()
         presenter?.viewDidLoad()
         UIBlockingProgressHUD.show()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
 }
 
@@ -79,7 +83,7 @@ extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath
     ) {
         guard let presenter = presenter else { return }
-        presenter.shouldFetchPhotosNextPage(lastImage: indexPath.row, getOnlyFirstPageIn: false)
+        presenter.shouldFetchPhotosNextPage(lastImage: indexPath.row/*, getOnlyFirstPageIn: false*/)
     }
 }
 
@@ -120,4 +124,23 @@ extension ImagesListViewController: ImagesListCellDelegate {
             }
         }
     }
+}
+
+extension ImagesListViewController {
+    private func setTableView() {
+        view.addSubview(tableView)
+        tableView.register(ImagesListCell.self, 
+                           forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.separatorStyle = .none
+        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
 }

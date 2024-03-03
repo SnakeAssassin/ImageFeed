@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         options: UIScene.ConnectionOptions
     ) -> UISceneConfiguration {
         let sceneConfiguration = UISceneConfiguration(
-            name: "Main",
+            name: "ImageFeed",
             sessionRole: connectingSceneSession.role
         )
         sceneConfiguration.delegateClass = SceneDelegate.self

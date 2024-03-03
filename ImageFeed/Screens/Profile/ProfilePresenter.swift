@@ -4,9 +4,6 @@ import Foundation
 
 public protocol ProfilePresenterProtocol {
     var view: ProfileViewControllerProtocol? { get set }
-    var nameLabel: String? { get set }
-    var descriptionLabel: String? { get set }
-    var loginLabel: String? { get set }
     
     func getImageURL() -> URL?
     func viewDidLoad()
@@ -20,12 +17,15 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     // MARK: Properties
     
     weak var view: ProfileViewControllerProtocol?
-    var nameLabel: String?
-    var descriptionLabel: String?
-    var loginLabel: String?
-    private let profileService = ProfileService.shared
+    
+    var profileService: ProfileServiceProtocol
+    private var profileImageServiceObserver: NSObjectProtocol?
     private let profileImageService = ProfileImageService.shared
     private let profileLogoutService = ProfileLogoutService.shared
+    
+    init(profileService: ProfileServiceProtocol){
+        self.profileService = profileService
+    }
     
     // MARK: Methods
     
@@ -37,15 +37,26 @@ final class ProfilePresenter: ProfilePresenterProtocol {
         return url
     }
     
-    func viewDidLoad() {
-        guard let profile = profileService.profile else { return }
-        nameLabel = profile.name
-        loginLabel = profile.loginName
-        descriptionLabel = profile.bio
-        view?.updateProfileDetails()
+    func viewDidLoad(){
+        startObserver()
+        if let profile = profileService.profile {
+            view?.updateProfileDetails(profile: profile)
+        }
     }
     
     func cleanTokenAndCookie() {
         profileLogoutService.logout()
     }    
+    
+    private func startObserver() {
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.DidChangeNotification,
+            object: nil,
+            queue: .main) {
+                [weak self] _ in
+                guard let self = self else { return }
+                view?.updateAvatar()
+            }
+        view?.updateAvatar()
+    }
 }

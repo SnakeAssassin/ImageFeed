@@ -1,6 +1,12 @@
 import UIKit
 
-final class ImagesListService {
+public protocol ImagesListServiceProtocol {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Bool, Error>) -> Void)
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     
     // MARK: Properties
     static let shared = ImagesListService()
@@ -15,7 +21,7 @@ final class ImagesListService {
     
     // MARK: Methods
     
-    internal func fetchPhotosNextPage() {
+    func fetchPhotosNextPage() {
         let nextPage = self.lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
         assert(Thread.isMainThread)
         guard task == nil else {

@@ -6,19 +6,19 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         tabBar.barTintColor = .ypBlack
         tabBar.tintColor = .ypWhite
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        guard let imagesListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController") as? ImagesListViewController else {
-            assertionFailure("Failed to prepare for ImagesListViewController")
-            return
-        }
-        
-        let imagesListPresenter = ImagesListPresenter()
+
+        let imagesListViewController = ImagesListViewController()
+        let imagesListService = ImagesListService.shared
+        let imagesListPresenter = ImagesListPresenter(imagesListService: imagesListService)
         imagesListViewController.presenter = imagesListPresenter
         imagesListPresenter.view = imagesListViewController
-        
+        imagesListViewController.tabBarItem = UITabBarItem(title: nil,
+                                                        image: UIImage(named: "tab_editorial_active"),
+                                                        selectedImage: nil)
         
         let profileViewController = ProfileViewController()
-        let profilePresenter = ProfilePresenter()
+        let profileService = ProfileService.shared
+        let profilePresenter = ProfilePresenter(profileService: profileService)
         profileViewController.presenter = profilePresenter
         profilePresenter.view = profileViewController
         profileViewController.tabBarItem = UITabBarItem(title: nil,
