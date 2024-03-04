@@ -115,11 +115,10 @@ extension ImagesListCell {
         
         contentView.addSubview(likeButton)
         likeButton.setTitle("", for: .normal)
+        likeButton.isUserInteractionEnabled = true
         NSLayoutConstraint.activate([
             likeButton.topAnchor.constraint(equalTo: mainImageView.topAnchor),
             likeButton.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor),
-            likeButton.heightAnchor.constraint(equalToConstant: 42),
-            likeButton.widthAnchor.constraint(equalToConstant: 42)
         ])
         
         contentView.addSubview(dateLabel)

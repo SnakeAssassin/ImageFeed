@@ -54,6 +54,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     
     private lazy var exitButton: UIButton = {
         let button = UIButton()
+        button.accessibilityIdentifier = "LogoutButton"
         button.setImage(UIImage(named: "Exit"), for: .normal)
         button.tintColor = .ypRed
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -89,6 +90,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             guard let self else { return }
             presenter?.cleanTokenAndCookie()
         }
+        alertActionYes.accessibilityIdentifier = "logoutAlertYesButton" 
         alert.addAction(alertActionYes)
         let alertActionNo = UIAlertAction(title: "Нет", style: .default) { [weak self] _ in
             guard let self = self else { return }

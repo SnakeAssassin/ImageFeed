@@ -32,6 +32,7 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate, WebVi
     
     private lazy var webView: WKWebView = {
         let webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
+        webView.accessibilityIdentifier = "UnsplashWebView"
         webView.navigationDelegate = self
         return webView
     }()

@@ -65,7 +65,9 @@ final class ImagesListService: ImagesListServiceProtocol {
     
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         assert(Thread.isMainThread)
-        guard task == nil else { return }
+        if task != nil {
+            task?.cancel()
+        }
         let path = "/photos/\(photoId)/like"
         let httpMethod = isLike ? "POST" : "DELETE"
         var request = URLRequest.makeHTTPRequest(path: path, httpMethod: httpMethod)
@@ -73,21 +75,19 @@ final class ImagesListService: ImagesListServiceProtocol {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         let task = urlSession.data(request: request) { [weak self] (result: Result<PhotoLikeResult, Error>) in
             guard let self = self else { return }
+            self.task = nil
             switch result {
             case.success(let resultLike):
                 if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
                     self.photos[index].isLiked = resultLike.photo.likedByUser
                 }
                 completion(.success(resultLike.photo.likedByUser))
-                self.task = nil
             case.failure(let error):
                 print(error.localizedDescription)
                 completion(.failure(error))
-                self.task = nil
             }
         }
         self.task = task
         task.resume()
-
     }
 }

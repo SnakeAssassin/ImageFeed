@@ -49,6 +49,7 @@ final class SingleImageViewController: UIViewController {
     
     private lazy var backButton: UIButton = {
         let button = UIButton()
+        button.accessibilityIdentifier = "backToImagesList"
         button.setImage(UIImage(named: "Backward_white"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true

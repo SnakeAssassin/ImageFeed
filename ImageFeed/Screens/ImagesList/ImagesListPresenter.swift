@@ -7,7 +7,7 @@ public protocol ImagesListPresenterProtocol {
     func viewDidLoad()
     func getPhotosCount() -> Int
     func getCellData(indexPath: IndexPath) -> (imageURL: String, isLiked: Bool, createdAt: String)
-    func shouldFetchPhotosNextPage(lastImage: Int/*, getOnlyFirstPageIn UITestMode: Bool*/)
+    func shouldFetchPhotosNextPage(lastImage: Int)
     func getPhoto(indexPath: IndexPath) -> Photo
     func changeLike(indexPath: IndexPath, _ completion: @escaping (Result<Bool, Error>) -> ())
 }
@@ -19,8 +19,6 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     // MARK: Properties
     
     weak var view: ImagesListControllerProtocol?
-    
-    //private let imagesListService = ImagesListService.shared
     var imagesListService: ImagesListServiceProtocol
         
     init(imagesListService: ImagesListServiceProtocol){
@@ -58,8 +56,8 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         return photos[indexPath.row]
     }
     
-    func shouldFetchPhotosNextPage(lastImage: Int/*, getOnlyFirstPageIn UITestMode: Bool*/) {
-        if lastImage + 1 == photos.count /*&& !UITestMode*/ {
+    func shouldFetchPhotosNextPage(lastImage: Int) {
+        if lastImage + 1 == photos.count {
             imagesListService.fetchPhotosNextPage()
         }
     }
