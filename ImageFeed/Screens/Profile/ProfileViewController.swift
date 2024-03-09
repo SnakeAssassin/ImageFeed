@@ -1,12 +1,22 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+// MARK: - Profile View Controller Protocol
+
+public protocol ProfileViewControllerProtocol: AnyObject {
     
-    // MARK: Private properties
+    var presenter: ProfilePresenterProtocol? { get set }
+    func updateProfileDetails(profile: Profile)
+    func updateAvatar()
+}
+
+// MARK: - Profile View Controller
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     
-    private let profileService = ProfileService.shared
-    private var profileImageServiceObserver: NSObjectProtocol?
+    // MARK: Properties
+    
+    var presenter: ProfilePresenterProtocol?
     
     private lazy var profileImageView: UIImageView = {
         let image = UIImageView()
@@ -26,7 +36,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private lazy var idLabel: UILabel = {
+    private lazy var loginLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = .ypGray
@@ -44,8 +54,8 @@ final class ProfileViewController: UIViewController {
     
     private lazy var exitButton: UIButton = {
         let button = UIButton()
+        button.accessibilityIdentifier = "LogoutButton"
         button.setImage(UIImage(named: "Exit"), for: .normal)
-        
         button.tintColor = .ypRed
         button.translatesAutoresizingMaskIntoConstraints = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
@@ -66,13 +76,11 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        createView()
-        startObserver()
-        guard let profile = profileService.profile else { return }
-        updateProfileDetails(profile: profile)
+        presenter?.viewDidLoad()
+        setView()
     }
     
-    // MARK: Logout
+    // MARK: Logout Alert
 
     private func showLogoutAlert() {
         let alert = UIAlertController(title: "Пока, пока!",
@@ -80,8 +88,9 @@ final class ProfileViewController: UIViewController {
                                       preferredStyle: .alert)
         let alertActionYes = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
             guard let self else { return }
-            ProfileLogoutService.shared.logout()
+            presenter?.cleanTokenAndCookie()
         }
+        alertActionYes.accessibilityIdentifier = "logoutAlertYesButton" 
         alert.addAction(alertActionYes)
         let alertActionNo = UIAlertAction(title: "Нет", style: .default) { [weak self] _ in
             guard let self = self else { return }
@@ -97,32 +106,17 @@ final class ProfileViewController: UIViewController {
 
 extension ProfileViewController {
     
-    private func updateProfileDetails(profile: Profile) {
-        nameLabel.text = profile.name
-        idLabel.text = profile.loginName
-        descriptionLabel.text = profile.bio
-    }
-    
-    private func startObserver() {
-        profileImageServiceObserver = NotificationCenter.default.addObserver(
-            forName: ProfileImageService.DidChangeNotification,
-            object: nil,
-            queue: .main) {
-                [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        updateAvatar()
-    }
-    
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
-        else { return }
+    func updateAvatar() {
         profileImageView.kf.indicatorType = .activity
+        let url = presenter?.getImageURL()
         profileImageView.kf.setImage(with: url,
                                      placeholder: UIImage(named: "Stub_profile"))
+    }
+    
+    func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
     }
 }
 
@@ -130,51 +124,32 @@ extension ProfileViewController {
 
 extension ProfileViewController {
     
-    private func createView() {
-        if let profile = profileService.profile {
-            updateProfileDetails(profile: profile)
-        }
-        setProfileImage()
-        setNameLabel()
-        setIdLabel()
-        setDescriptionLabel()
-        setExitButton()
-        updateAvatar()
-    }
-    
-    private func setProfileImage() {
+    private func setView() {
+        
         view.addSubview(profileImageView)
         NSLayoutConstraint.activate([
             profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
             profileImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16)
         ])
-    }
-    
-    private func setNameLabel() {
+        
         view.addSubview(nameLabel)
         NSLayoutConstraint.activate([
             nameLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 8),
             nameLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16)
         ])
-    }
-    
-    private func setIdLabel() {
-        view.addSubview(idLabel)
+        
+        view.addSubview(loginLabel)
         NSLayoutConstraint.activate([
-            idLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
-            idLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            loginLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
+            loginLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
         ])
-    }
-    
-    private func setDescriptionLabel() {
+        
         view.addSubview(descriptionLabel)
         NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: idLabel.bottomAnchor, constant: 8),
+            descriptionLabel.topAnchor.constraint(equalTo: loginLabel.bottomAnchor, constant: 8),
             descriptionLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16)
         ])
-    }
-    
-    private func setExitButton() {
+        
         view.addSubview(exitButton)
         NSLayoutConstraint.activate([
             exitButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),

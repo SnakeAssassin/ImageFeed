@@ -5,15 +5,26 @@ import WebKit
 // MARK: - WebView Controller Delegate
 
 protocol WebViewViewControllerDelegate: AnyObject {
-    
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
 
-// MARK: - WebView Controller
+// MARK: - WebView Controller Protocol
 
-final class WebViewViewController: UIViewController, WKNavigationDelegate  {
+public protocol WebViewViewControllerProtocol: AnyObject {
+    var presenter: WebViewPresenterProtocol? { get set }
+    func load(request: URLRequest)
+    func setProgressValue(_ newValue: Float)
+    func setProgressHidden(_ isHidden: Bool)
+}
+// MARK: - WebView ViewController
+
+final class WebViewViewController: UIViewController, WKNavigationDelegate, WebViewViewControllerProtocol  {
+
+    // MARK: - Public Properties
     
+    var presenter: WebViewPresenterProtocol?
+
     // MARK: Private properties
     
     weak var delegate: WebViewViewControllerDelegate?
@@ -21,6 +32,7 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
     
     private lazy var webView: WKWebView = {
         let webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
+        webView.accessibilityIdentifier = "UnsplashWebView"
         webView.navigationDelegate = self
         return webView
     }()
@@ -44,28 +56,25 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate  {
         return progressView
     }()
     
-    
-    // MARK: Actions
-    
-    @objc private func didTapButton() {
-        delegate?.webViewViewControllerDidCancel(self)
-    }
-    
     // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         createView()
-        loadURLWebView()
+        presenter?.viewDidLoad()
         setupProgressObservation()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    // MARK: IB Actions
+    
+    @objc private func didTapButton() {
+        delegate?.webViewViewControllerDidCancel(self)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    // MARK: Public Methods
+    
+    func load(request: URLRequest) {
+        webView.load(request)
     }
 }
 
@@ -87,35 +96,34 @@ extension WebViewViewController {
     }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
-        if let url = navigationAction.request.url,
-           let urlComponents = URLComponents(string: url.absoluteString),
-           urlComponents.path == "/oauth/authorize/native",
-           let items = urlComponents.queryItems,
-           let codeItem = items.first(where: { $0.name == "code" })
-        {
-            return codeItem.value
-        } else {
-            return nil
+        if let url = navigationAction.request.url {
+            return presenter?.code(from: url)
         }
+        return nil
     }
 }
 
-// MARK: - Update Progress
+// MARK: - Update Progress Observer
 
 extension WebViewViewController {
+    
+    func setProgressValue(_ newValue: Float) {
+        progressView.progress = newValue
+    }
+    
+    func setProgressHidden(_ isHidden: Bool) {
+        progressView.isHidden = isHidden
+    }
+    
     private func setupProgressObservation() {
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
              options: [],
              changeHandler: { [weak self] _, _ in
                  guard let self = self else { return }
-                 self.updateProgress()
-             })
-    }
-    
-    private func updateProgress() {
-        progressView.progress = Float(webView.estimatedProgress)
-        progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
+                 self.presenter?.didUpdateProgressValue(webView.estimatedProgress)
+             }
+        )
     }
 }
 
@@ -159,24 +167,5 @@ extension WebViewViewController {
             progressView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             progressView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
-    }
-}
-
-// MARK: - Request URL
-
-extension WebViewViewController {
-    
-    private func loadURLWebView() {
-        var urlComponents = URLComponents(string: UnsplashAuthorizeURLString)!
-        urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: AccessKey),
-            URLQueryItem(name: "redirect_uri", value: RedirectURI),
-            URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: AccessScope)
-        ]
-        
-        let url = urlComponents.url!
-        let request = URLRequest(url: url)
-        webView.load(request)
     }
 }

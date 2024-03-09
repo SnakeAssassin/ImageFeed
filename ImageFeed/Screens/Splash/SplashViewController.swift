@@ -10,7 +10,7 @@ final class SplashViewController: UIViewController {
     private let tabBarViewControllerIdentifier = "TabBarViewController"
     private let oauth2TokenStorage = OAuth2TokenStorage.shared
     private let oauth2Service = OAuth2Service.shared
-    private let profileService = ProfileService.shared
+    private let profileService: ProfileServiceProtocol = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
